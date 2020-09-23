@@ -7,6 +7,8 @@ PROJECT="Jrohy/webssh"
 #获取当前的这个脚本所在绝对路径
 SHELL_PATH=$(cd `dirname $0`; pwd)
 
+RELEASE_ID=`curl -H 'Cache-Control: no-cache' -s https://api.github.com/repos/$PROJECT/releases/latest|grep id|awk 'NR==1{print $2}'|sed 's/,//'`
+
 function uploadfile() {
     FILE=$1
 
