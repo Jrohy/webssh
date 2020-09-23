@@ -60,8 +60,13 @@ export default {
             const attachAddon = new AttachAddon(this.ws)
             this.term.loadAddon(attachAddon)
             this.term.attachCustomKeyEventHandler((e) => {
-                // ctrl + c / ctrl + v
-                if (e.ctrlKey && (e.key === 'c' || e.key === 'v')) {
+                // ctrl + v
+                if (e.ctrlKey && e.key === 'v') {
+                    document.execCommand('copy')
+                    return false
+                }
+                // ctrl + c
+                if (e.ctrlKey && e.key === 'c' && self.term.hasSelection()) {
                     document.execCommand('copy')
                     return false
                 }
