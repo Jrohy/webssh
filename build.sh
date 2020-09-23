@@ -1,5 +1,33 @@
 #!/bin/bash
 
+GITHUB_TOKEN=""
+
+PROJECT="Jrohy/webssh"
+
+#获取当前的这个脚本所在绝对路径
+SHELL_PATH=$(cd `dirname $0`; pwd)
+
+function uploadfile() {
+    FILE=$1
+
+    CTYPE=$(file -b --mime-type $FILE)
+
+    curl -H "Authorization: token ${GITHUB_TOKEN}" -H "Content-Type: ${CTYPE}" --data-binary @$FILE "https://uploads.github.com/repos/$PROJECT/releases/${RELEASE_ID}/assets?name=$(basename $FILE)"
+
+    echo ""
+}
+
+function upload() {
+    FILE=$1
+    DGST=$1.dgst
+    openssl dgst -md5 $FILE | sed 's/([^)]*)//g' >> $DGST
+    openssl dgst -sha1 $FILE | sed 's/([^)]*)//g' >> $DGST
+    openssl dgst -sha256 $FILE | sed 's/([^)]*)//g' >> $DGST
+    openssl dgst -sha512 $FILE | sed 's/([^)]*)//g' >> $DGST
+    uploadfile $FILE
+    uploadfile $DGST
+}
+
 packr2
 
 GOOS=windows GOARCH=amd64 go build -ldflags "-w -s" -o result/webssh_windows_amd64.exe .
@@ -8,4 +36,19 @@ GOOS=linux GOARCH=amd64 go build -ldflags "-w -s" -o result/webssh_linux_amd64 .
 GOOS=linux GOARCH=arm64 go build -ldflags "-w -s" -o result/webssh_linux_arm64 .
 GOOS=darwin GOARCH=amd64 go build -ldflags "-w -s" -o result/webssh_darwin_amd64 .
 
+cd result
+
+UPLOAD_ITEM=($(ls -l|awk '{print $9}'|xargs -r))
+
+for ITEM in ${UPLOAD_ITEM[@]}
+do
+   upload $ITEM
+done
+
+echo "upload completed!"
+
+cd $SHELL_PATH
+
 packr2 clean
+
+rm -rf result
