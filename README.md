@@ -15,9 +15,11 @@ Usage of ./webssh_linux_amd64:
 ```
 
 ## 原理
+```
 +---------+     http     +--------+    ssh    +-----------+
 | browser | <==========> | webssh | <=======> | ssh server|
 +---------+   websocket  +--------+    ssh    +-----------+
+```
 
 ## 运行
 下载release里不同平台的包来执行即可
