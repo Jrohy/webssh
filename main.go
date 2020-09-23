@@ -22,7 +22,7 @@ func init() {
 }
 
 func staticRouter(router *gin.Engine) {
-	box := packr.New("websshBox", "./templates")
+	box := packr.New("websshBox", "./web/dist")
 	router.Use(func(c *gin.Context) {
 		requestUrl := c.Request.URL.Path
 		if box.Has(requestUrl) || requestUrl == "/" {
