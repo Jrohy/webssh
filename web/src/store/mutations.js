@@ -10,6 +10,8 @@ export default {
         state.sshInfo.host = ssh.host
         state.sshInfo.username = ssh.username
         state.sshInfo.password = ssh.port
-        state.sshInfo.password = ''
+        if (ssh.password !== undefined) {
+            state.sshInfo.password = ssh.password
+        }
     }
 }

@@ -17,7 +17,9 @@ import {
     Upload,
     Dropdown,
     DropdownMenu,
-    DropdownItem
+    DropdownItem,
+    Tabs,
+    TabPane
 } from 'element-ui'
 const element = {
     install: function (Vue) {
@@ -38,6 +40,8 @@ const element = {
         Vue.use(Dropdown)
         Vue.use(DropdownItem)
         Vue.use(DropdownMenu)
+        Vue.use(Tabs)
+        Vue.use(TabPane)
         Vue.prototype.$message = Message
     }
 }

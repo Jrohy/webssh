@@ -6,7 +6,7 @@
       </el-header>
       <el-container>
         <el-main style="padding: 0">
-            <webssh ref="webssh"></webssh>
+            <tabs ref="tabs"></tabs>
         </el-main>
       </el-container>
     </el-container>
@@ -15,17 +15,17 @@
 
 <script>
 import Header from '@/components/Header'
-import WebSSH from '@/components/WebSSH'
+import Tabs from '@/components/Tabs'
 
 export default {
     name: 'App',
     components: {
         vheader: Header,
-        webssh: WebSSH
+        tabs: Tabs
     },
     methods: {
         openTerm() {
-            this.$refs.webssh.openTerm()
+            this.$refs.tabs.openTerm()
         }
     }
 }
