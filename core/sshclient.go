@@ -124,6 +124,9 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, d time.Duration) {
 				close(stopCh)
 				return
 			}
+			if string(p) == "ping" {
+				continue
+			}
 			_, err = sclient.channel.Write(p)
 			if err != nil {
 				close(stopCh)

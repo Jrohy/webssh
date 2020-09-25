@@ -47,11 +47,24 @@ export default {
 
             }
             const self = this
+            const heartCheck = {
+                timeout: 5000, // 5s发一次心跳
+                intervalObj: null,
+                stop: function() {
+                    clearInterval(this.intervalObj)
+                },
+                start: function() {
+                    this.intervalObj = setInterval(function() {
+                        self.ws.send('ping')
+                    }, this.timeout)
+                }
+            }
             // open websocket
             this.ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${prefix}/term?sshInfo=${sshReq}&rows=${this.term.rows}&cols=${this.term.cols}`)
             this.ws.onopen = e => {
                 console.log(Date(), 'onopen')
                 self.connected()
+                heartCheck.start()
             }
             this.ws.onclose = e => {
                 console.log(Date(), 'onclose')
@@ -65,6 +78,7 @@ export default {
                     })
                     this.ws = null
                     this.ssh.password = ''
+                    heartCheck.stop()
                 }
                 self.resetClose = false
             }
