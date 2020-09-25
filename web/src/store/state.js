@@ -5,5 +5,6 @@ export default {
         port: 22,
         password: ''
     },
-    sshList: Object.prototype.hasOwnProperty.call(localStorage, 'sshList') ? localStorage.getItem('sshList') : null
+    sshList: Object.prototype.hasOwnProperty.call(localStorage, 'sshList') ? localStorage.getItem('sshList') : null,
+    currentTab: ''
 }

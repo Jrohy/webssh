@@ -1,7 +1,7 @@
 <template>
     <div class="MainContainer">
         <el-button type="primary" size="small" @click="getFileList(); dialogVisible = true">文件管理</el-button>
-        <el-dialog title="文件管理" :visible.sync="dialogVisible" top="5vh">
+        <el-dialog :title="'文件管理(' + this.$store.state.sshInfo.host + ')'" :visible.sync="dialogVisible" top="5vh">
             <el-row>
                 <el-col :span="18">
                     <el-input v-model="currentPath" @keyup.enter.native="getFileList()"></el-input>
@@ -41,6 +41,7 @@
 
 <script>
 import { fileList } from '@/api/file'
+import { mapState } from 'vuex'
 
 export default {
     name: 'FileList',
@@ -59,6 +60,7 @@ export default {
         this.clientHeight = document.body.clientHeight - 185
     },
     computed: {
+        ...mapState(['currentTab']),
         uploadUrl: () => {
             return `${process.env.NODE_ENV === 'production' ? `${location.origin}` : 'api'}/file/upload`
         },
@@ -67,6 +69,11 @@ export default {
                 sshInfo: this.$store.getters.sshReq,
                 path: this.currentPath
             }
+        }
+    },
+    watch: {
+        currentTab: function() {
+            this.currentPath = '/'
         }
     },
     methods: {

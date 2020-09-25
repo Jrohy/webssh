@@ -13,5 +13,8 @@ export default {
         if (ssh.password !== undefined) {
             state.sshInfo.password = ssh.password
         }
+    },
+    SET_TAB(state, tab) {
+        state.currentTab = tab
     }
 }

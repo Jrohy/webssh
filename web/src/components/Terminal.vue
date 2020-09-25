@@ -96,6 +96,7 @@ export default {
                 return
             }
             document.title = sshInfo.host
+            this.$store.commit('SET_TAB', sshInfo.host)
             let sshList = this.$store.state.sshList
             if (sshList === null) {
                 sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}}]`

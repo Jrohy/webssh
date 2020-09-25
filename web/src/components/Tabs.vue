@@ -45,6 +45,7 @@ export default {
         clickTab(tab) {
             this.$refs[`${tab.name}`][0].setSSH()
             document.title = tab.label
+            this.$store.commit('SET_TAB', tab.label)
         },
         removeTab(targetName) {
             const tabs = this.termList
