@@ -78,8 +78,8 @@ export default {
                     })
                     this.ws = null
                     this.ssh.password = ''
-                    heartCheck.stop()
                 }
+                heartCheck.stop()
                 self.resetClose = false
             }
             this.ws.onerror = e => {

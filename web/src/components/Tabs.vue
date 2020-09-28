@@ -10,6 +10,14 @@
                 <terminal :id="'Terminal' + index" :ref="item.name"></terminal>
             </el-tab-pane>
         </el-tabs>
+        <div v-show="contextMenuVisible">
+            <ul :style="{left:left+'px',top:top+'px'}" class="contextmenu">
+                <li><el-button type="text" @click="closeAllTabs()" size="mini">关闭所有</el-button></li>
+                <li><el-button type="text" @click="closeOtherTabs('left')" size="mini">关闭左边</el-button></li>
+                <li><el-button type="text" @click="closeOtherTabs('right')" size="mini">关闭右边</el-button></li>
+                <li><el-button type="text" @click="closeOtherTabs('other')" size="mini">关闭其他</el-button></li>
+            </ul>
+        </div>
     </div>
 </template>
 
@@ -24,10 +32,87 @@ export default {
     data () {
         return {
             termList: [],
-            currentTerm: ''
+            currentTerm: '',
+            currentTermIndex: 0,
+            menuTab: '',
+            contextMenuVisible: false,
+            left: '',
+            top: ''
+        }
+    },
+    watch: {
+        contextMenuVisible() {
+            if (this.contextMenuVisible) {
+                document.body.addEventListener('click', this.closeContextMenu)
+            } else {
+                document.body.removeEventListener('click', this.closeContextMenu)
+            }
+        }
+    },
+    mounted() {
+        // 使用原生js 为单个dom绑定鼠标右击事件
+        const tabTop = document.body.getElementsByClassName('el-tabs__nav-scroll')
+        for (let i = 0; i < tabTop.length; ++i) {
+            tabTop[i].oncontextmenu = this.openContextMenu
         }
     },
     methods: {
+        closeAllTabs() {
+            this.termList = []
+        },
+        closeOtherTabs(par) {
+            let currMenuIndex = 0
+            for (;currMenuIndex < this.termList.length; ++currMenuIndex) {
+                if (this.termList[currMenuIndex].name === this.menuTab) {
+                    break
+                }
+            }
+            const setCurrentTerm = () => {
+                this.currentTermIndex = currMenuIndex
+                const tab = this.termList[currMenuIndex]
+                this.currentTerm = tab.name
+                document.title = tab.label
+                this.$store.commit('SET_TAB', tab.label)
+                this.$refs[`${tab.name}`][0].setSSH()
+            }
+            switch (par) {
+            case 'left':
+                // 删除左侧tab标签
+                if (this.currentTermIndex < currMenuIndex) {
+                    setCurrentTerm()
+                }
+                this.termList.splice(0, currMenuIndex)
+                break
+            case 'right':
+                // 删除右侧tab标签
+                if (this.currentTermIndex > currMenuIndex) {
+                    setCurrentTerm()
+                }
+                this.termList.splice(currMenuIndex + 1, this.termList.length)
+                break
+            case 'other':
+                // 删除其他所有tab标签
+                if (this.currentTermIndex !== currMenuIndex) {
+                    setCurrentTerm()
+                }
+                this.termList = this.termList.filter(tab => tab.name === this.menuTab)
+                break
+            }
+            this.closeContextMenu()
+        },
+        closeContextMenu() {
+            this.contextMenuVisible = false
+        },
+        openContextMenu(e) {
+            e.preventDefault() // 防止默认菜单弹出
+            const obj = e.srcElement ? e.srcElement : e.target
+            if (obj.id) {
+                this.menuTab = obj.id.substr(4)
+                this.contextMenuVisible = true
+                this.left = e.clientX
+                this.top = 20
+            }
+        },
         genID(length) {
             return Number(Math.random().toString().substr(3, length) + Date.now()).toString(36)
         },
@@ -41,11 +126,18 @@ export default {
                 label: sshInfo.host
             })
             this.currentTerm = this.termList[this.termList.length - 1].name
+            this.currentTermIndex = this.termList.length - 1
         },
         clickTab(tab) {
             this.$refs[`${tab.name}`][0].setSSH()
             document.title = tab.label
             this.$store.commit('SET_TAB', tab.label)
+            for (let i = 0; i < this.termList.length; ++i) {
+                if (this.termList[i].name === this.currentTerm) {
+                    this.currentTermIndex = i
+                    break
+                }
+            }
         },
         removeTab(targetName) {
             const tabs = this.termList
@@ -68,5 +160,30 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
+.contextmenu {
+    width: 100px;
+    margin: 0;
+    border: 1px solid #ccc;
+    background: #fff;
+    z-index: 3000;
+    position: absolute;
+    list-style-type: none;
+    padding: 5px 0;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+    box-shadow: 2px 2px 3px 0 rgba(0, 0, 0, 0.2);
+    li {
+        margin: 0;
+        padding: 0px 22px;
+    }
+    li:hover {
+        background: #f2f2f2;
+        cursor: pointer;
+    }
+    li button{
+        color: #2c3e50;
+    }
+}
 </style>
