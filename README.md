@@ -26,3 +26,8 @@ Usage of ./webssh_linux_amd64:
 
 ## 运行
 下载release里不同平台的包来执行即可
+
+docker运行:
+```
+docker run -d -p 5032:5032 --log-driver json-file --log-opt max-file=1 --log-opt max-size=100m --restart always --name webssh -e TZ=Asia/Shanghai jrohy/webssh
+```
