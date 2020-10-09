@@ -9,7 +9,7 @@ export default {
     SET_SSH(state, ssh) {
         state.sshInfo.host = ssh.host
         state.sshInfo.username = ssh.username
-        state.sshInfo.password = ssh.port
+        state.sshInfo.port = ssh.port
         if (ssh.password !== undefined) {
             state.sshInfo.password = ssh.password
         }

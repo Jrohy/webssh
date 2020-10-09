@@ -6,10 +6,10 @@
                     <el-input v-model="sshInfo.host" placeholder="请输入远程host地址" @keyup.enter.native="$emit('ssh-select')"></el-input>
                 </el-form-item>
                 <el-form-item label="Port" size="small" prop="port">
-                    <el-input v-model="sshInfo.port" placeholder="请输入端口" style="width: 100px"></el-input>
+                    <el-input v-model="sshInfo.port" placeholder="请输入端口" @keyup.enter.native="$emit('ssh-select')" style="width: 100px"></el-input>
                 </el-form-item>
                 <el-form-item label="Username" size="small" prop="username">
-                    <el-input v-model="sshInfo.username" placeholder="请输入用户名" style="width: 110px"></el-input>
+                    <el-input v-model="sshInfo.username" placeholder="请输入用户名" @keyup.enter.native="$emit('ssh-select')" style="width: 110px"></el-input>
                 </el-form-item>
                 <el-form-item label="Password" size="small" prop="password">
                     <el-input v-model="sshInfo.password" @keyup.enter.native="$emit('ssh-select')" placeholder="请输入密码" show-password></el-input>
