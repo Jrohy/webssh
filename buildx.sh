@@ -1,5 +1,5 @@
 #!/bin/bash
-LATEST_TAG=`git tag|awk 'END {print}'`
+LATEST_TAG=`git describe --tags $(git rev-list --tags --max-count=1)`
 
 gox -output="docker/result/webssh_{{.OS}}_{{.Arch}}" -ldflags="-s -w" -os="linux"
 cd docker
