@@ -8,7 +8,7 @@ const dllPath = 'public/vendor'
 module.exports = {
     entry: {
         // 需要提取的库文件
-        vendor: ['vue', 'vuex', 'axios', 'xterm', 'xterm-addon-attach', 'xterm-addon-fit']
+        vendor: ['vue', 'vuex', 'axios', 'xterm', 'xterm-addon-attach', 'xterm-addon-fit', 'sortablejs']
     },
     output: {
         path: path.join(__dirname, dllPath),

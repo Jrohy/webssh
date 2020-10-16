@@ -19,7 +19,8 @@ import {
     DropdownMenu,
     DropdownItem,
     Tabs,
-    TabPane
+    TabPane,
+    Divider
 } from 'element-ui'
 const element = {
     install: function (Vue) {
@@ -42,6 +43,7 @@ const element = {
         Vue.use(DropdownMenu)
         Vue.use(Tabs)
         Vue.use(TabPane)
+        Vue.use(Divider)
         Vue.prototype.$message = Message
     }
 }

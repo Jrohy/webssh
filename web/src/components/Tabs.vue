@@ -12,16 +12,20 @@
         </el-tabs>
         <div v-show="contextMenuVisible">
             <ul :style="{left:left+'px',top:top+'px'}" class="contextmenu">
-                <li><el-button type="text" @click="closeAllTabs()" size="mini">关闭所有</el-button></li>
-                <li><el-button type="text" @click="closeOtherTabs('left')" size="mini">关闭左边</el-button></li>
-                <li><el-button type="text" @click="closeOtherTabs('right')" size="mini">关闭右边</el-button></li>
-                <li><el-button type="text" @click="closeOtherTabs('other')" size="mini">关闭其他</el-button></li>
+                <li @click="copyTab()"><el-button type="text" size="mini">复制</el-button></li>
+                <li @click="removeTab(menuTab)"><el-button type="text" size="mini">关闭</el-button></li>
+                <el-divider></el-divider>
+                <li @click="closeTabs('left')"><el-button type="text" size="mini">关闭左边</el-button></li>
+                <li @click="closeTabs('right')"><el-button type="text" size="mini">关闭右边</el-button></li>
+                <li @click="closeTabs('other')"><el-button type="text"  size="mini">关闭其他</el-button></li>
+                <li @click="closeTabs('all')"><el-button type="text" size="mini">关闭所有</el-button></li>
             </ul>
         </div>
     </div>
 </template>
 
 <script>
+import Sortable from 'sortablejs'
 import Terminal from '@/components/Terminal'
 
 export default {
@@ -55,12 +59,27 @@ export default {
         for (let i = 0; i < tabTop.length; ++i) {
             tabTop[i].oncontextmenu = this.openContextMenu
         }
+        // 实现el-tabs可拖动
+        const self = this
+        const el = document.querySelector('.el-tabs__nav')
+        Sortable.create(el, {
+            animation: 200,
+            onEnd({ newIndex, oldIndex }) {
+                const currRow = self.termList.splice(oldIndex, 1)[0]
+                self.termList.splice(newIndex, 0, currRow)
+            }
+        })
     },
     methods: {
-        closeAllTabs() {
-            this.termList = []
+        copyTab() {
+            this.$refs[`${this.menuTab}`][0].setSSH()
+            this.openTerm()
         },
-        closeOtherTabs(par) {
+        closeTabs(par) {
+            if (par === 'all') {
+                this.termList = []
+                return
+            }
             let currMenuIndex = 0
             for (;currMenuIndex < this.termList.length; ++currMenuIndex) {
                 if (this.termList[currMenuIndex].name === this.menuTab) {
@@ -161,6 +180,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+ .el-divider--horizontal{
+     margin: 3px 0;
+ }
 .contextmenu {
     width: 100px;
     margin: 0;

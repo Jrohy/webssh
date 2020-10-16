@@ -2,7 +2,9 @@
   <div id="app">
     <el-container>
       <el-header>
-        <vheader @ssh-select="openTerm"/>
+        <vheader @ssh-select="() => {
+          this.$refs.tabs.openTerm()
+        }"/>
       </el-header>
       <el-container>
         <el-main style="padding: 0">
@@ -22,11 +24,6 @@ export default {
     components: {
         vheader: Header,
         tabs: Tabs
-    },
-    methods: {
-        openTerm() {
-            this.$refs.tabs.openTerm()
-        }
     }
 }
 </script>
