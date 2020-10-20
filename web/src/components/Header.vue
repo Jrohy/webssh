@@ -1,6 +1,6 @@
 <template>
     <el-row>
-        <el-col :span="24">
+        <el-col>
             <el-form :inline="true" style="padding-top: 15px" :model="sshInfo" :rules="checkRules">
                 <el-form-item label="Host" size="small" prop="host">
                     <el-input v-model="sshInfo.host" placeholder="请输入远程host地址" @keyup.enter.native="$emit('ssh-select')"></el-input>

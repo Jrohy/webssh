@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <el-container>
-      <el-header>
+      <el-header style="height: auto">
         <vheader @ssh-select="() => {
           this.$refs.tabs.openTerm()
         }"/>
