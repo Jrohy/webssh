@@ -2,12 +2,13 @@ package controller
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"net/http"
 	"strconv"
 	"time"
 	"webssh/core"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 var upgrader = websocket.Upgrader{
@@ -18,6 +19,7 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+// TermWs 获取终端ws
 func TermWs(c *gin.Context, d time.Duration) *ResponseBody {
 	responseBody := ResponseBody{Msg: "success"}
 	defer TimeCost(time.Now(), &responseBody)

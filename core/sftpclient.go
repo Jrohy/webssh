@@ -1,11 +1,13 @@
 package core
 
 import (
-	"github.com/pkg/sftp"
 	"io"
 	"mime/multipart"
+
+	"github.com/pkg/sftp"
 )
 
+// CreateSftp 创建sftp客户端
 func (sclient *SSHClient) CreateSftp() error {
 	err := sclient.GenerateClient()
 	if err != nil {
@@ -19,10 +21,12 @@ func (sclient *SSHClient) CreateSftp() error {
 	return nil
 }
 
+// Download 下载文件
 func (sclient *SSHClient) Download(srcPath string) (*sftp.File, error) {
 	return sclient.Sftp.Open(srcPath)
 }
 
+// Upload 上传文件
 func (sclient *SSHClient) Upload(file multipart.File, dstPath string) error {
 	dstFile, err := sclient.Sftp.Create(dstPath)
 	if err != nil {
@@ -35,4 +39,3 @@ func (sclient *SSHClient) Upload(file multipart.File, dstPath string) error {
 	}
 	return nil
 }
-

@@ -2,14 +2,16 @@ package controller
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
 	"strings"
 	"time"
 	"webssh/core"
+
+	"github.com/gin-gonic/gin"
 )
 
+// File 结构体
 type File struct {
 	Name       string
 	Size       string
@@ -18,6 +20,7 @@ type File struct {
 	FType uint8
 }
 
+// UploadFile 上传文件
 func UploadFile(c *gin.Context) *ResponseBody {
 	var (
 		sshClient core.SSHClient
@@ -57,6 +60,7 @@ func UploadFile(c *gin.Context) *ResponseBody {
 	return &responseBody
 }
 
+// DownloadFile 下载文件
 func DownloadFile(c *gin.Context) *ResponseBody {
 	var (
 		sshClient core.SSHClient
@@ -84,12 +88,13 @@ func DownloadFile(c *gin.Context) *ResponseBody {
 		defer sftpFile.Close()
 		c.Writer.WriteHeader(http.StatusOK)
 		fileMeta := strings.Split(path, "/")
-		c.Header("Content-Disposition", "attachment; filename=" + fileMeta[len(fileMeta)-1])
+		c.Header("Content-Disposition", "attachment; filename="+fileMeta[len(fileMeta)-1])
 		_, _ = io.Copy(c.Writer, sftpFile)
 	}
 	return &responseBody
 }
 
+// FileList 获取文件列表
 func FileList(c *gin.Context) *ResponseBody {
 	responseBody := ResponseBody{Msg: "success"}
 	defer TimeCost(time.Now(), &responseBody)

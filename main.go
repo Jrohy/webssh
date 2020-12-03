@@ -3,16 +3,17 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/gin-contrib/gzip"
-	"github.com/gin-gonic/gin"
-	"github.com/gobuffalo/packr/v2"
 	"net/http"
 	"time"
 	"webssh/controller"
+
+	"github.com/gin-contrib/gzip"
+	"github.com/gin-gonic/gin"
+	"github.com/gobuffalo/packr/v2"
 )
 
 var (
-	port = flag.Int("p", 5032, "服务运行端口")
+	port    = flag.Int("p", 5032, "服务运行端口")
 	timeout int
 )
 
@@ -24,8 +25,8 @@ func init() {
 func staticRouter(router *gin.Engine) {
 	box := packr.New("websshBox", "./web/dist")
 	router.Use(func(c *gin.Context) {
-		requestUrl := c.Request.URL.Path
-		if box.Has(requestUrl) || requestUrl == "/" {
+		requestURL := c.Request.URL.Path
+		if box.Has(requestURL) || requestURL == "/" {
 			http.FileServer(box).ServeHTTP(c.Writer, c.Request)
 			c.Abort()
 		}
@@ -37,7 +38,7 @@ func main() {
 	server.Use(gzip.Gzip(gzip.DefaultCompression))
 	staticRouter(server)
 	server.GET("/term", func(c *gin.Context) {
-		controller.TermWs(c, time.Duration(timeout) * time.Minute)
+		controller.TermWs(c, time.Duration(timeout)*time.Minute)
 	})
 	file := server.Group("/file")
 	{

@@ -1,6 +1,7 @@
 # webssh
 ![](https://img.shields.io/github/v/release/Jrohy/webssh.svg) 
 ![](https://img.shields.io/docker/pulls/jrohy/webssh.svg) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/Jrohy/webssh)](https://goreportcard.com/report/github.com/Jrohy/webssh)
 [![Downloads](https://img.shields.io/github/downloads/Jrohy/webssh/total.svg)](https://img.shields.io/github/downloads/Jrohy/webssh/total.svg) 
 [![License](https://img.shields.io/badge/license-GPL%20V3-blue.svg?longCache=true)](https://www.gnu.org/licenses/gpl-3.0.en.html)   
 简易在线ssh和sftp工具, 可在线敲命令和上传下载文件

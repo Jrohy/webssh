@@ -14,15 +14,17 @@ type ptyRequestMsg struct {
 	Modelist string
 }
 
+// Terminal 结构体
 type Terminal struct {
 	Columns uint32 `json:"cols"`
 	Rows    uint32 `json:"rows"`
 }
 
+// SSHClient 结构体
 type SSHClient struct {
 	Username  string `json:"username"`
 	Password  string `json:"password"`
-	IpAddress string `json:"ipaddress"`
+	IPAddress string `json:"ipaddress"`
 	Port      int    `json:"port"`
 	Session   *ssh.Session
 	Client    *ssh.Client
@@ -30,6 +32,7 @@ type SSHClient struct {
 	channel   ssh.Channel
 }
 
+// NewSSHClient 返回默认ssh信息
 func NewSSHClient() SSHClient {
 	client := SSHClient{}
 	client.Username = "root"

@@ -15,6 +15,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
+// DecodedMsgToSSHClient 字符串信息解析为ssh客户端
 func DecodedMsgToSSHClient(sshInfo string) (SSHClient, error) {
 	client := NewSSHClient()
 	decoded, err := base64.StdEncoding.DecodeString(sshInfo)
@@ -25,12 +26,13 @@ func DecodedMsgToSSHClient(sshInfo string) (SSHClient, error) {
 	if err != nil {
 		return client, err
 	}
-	if strings.Contains(client.IpAddress, ":") && string(client.IpAddress[0]) != "[" {
-		client.IpAddress = "[" + client.IpAddress + "]"
+	if strings.Contains(client.IPAddress, ":") && string(client.IPAddress[0]) != "[" {
+		client.IPAddress = "[" + client.IPAddress + "]"
 	}
 	return client, nil
 }
 
+// GenerateClient 创建ssh客户端
 func (sclient *SSHClient) GenerateClient() error {
 	var (
 		auth         []ssh.AuthMethod
@@ -54,7 +56,7 @@ func (sclient *SSHClient) GenerateClient() error {
 			return nil
 		},
 	}
-	addr = fmt.Sprintf("%s:%d", sclient.IpAddress, sclient.Port)
+	addr = fmt.Sprintf("%s:%d", sclient.IPAddress, sclient.Port)
 	if client, err = ssh.Dial("tcp", addr, clientConfig); err != nil {
 		return err
 	}
@@ -62,6 +64,7 @@ func (sclient *SSHClient) GenerateClient() error {
 	return nil
 }
 
+// InitTerminal 初始化终端
 func (sclient *SSHClient) InitTerminal(terminal Terminal) *SSHClient {
 	session, err := sclient.Client.NewSession()
 	if err != nil {
@@ -117,6 +120,7 @@ func (sclient *SSHClient) InitTerminal(terminal Terminal) *SSHClient {
 	return sclient
 }
 
+// Connect ws连接
 func (sclient *SSHClient) Connect(ws *websocket.Conn, d time.Duration) {
 	stopCh := make(chan struct{})
 	//这里第一个协程获取用户的输入
@@ -212,6 +216,7 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, d time.Duration) {
 	}()
 }
 
+// ExecRemoteCommand 执行远程命令
 func (sclient *SSHClient) ExecRemoteCommand(command string) (string, error) {
 	//创建ssh登陆配置
 	config := &ssh.ClientConfig{
@@ -222,7 +227,7 @@ func (sclient *SSHClient) ExecRemoteCommand(command string) (string, error) {
 	config.Auth = []ssh.AuthMethod{ssh.Password(sclient.Password)}
 
 	//dial 获取ssh client
-	addr := fmt.Sprintf("%s:%d", sclient.IpAddress, sclient.Port)
+	addr := fmt.Sprintf("%s:%d", sclient.IPAddress, sclient.Port)
 	sshClient, err := ssh.Dial("tcp", addr, config)
 	if err != nil {
 		fmt.Println("创建ssh client 失败: ", err)
