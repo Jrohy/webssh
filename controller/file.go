@@ -83,7 +83,6 @@ func DownloadFile(c *gin.Context) *ResponseBody {
 	if sftpFile, err := sshClient.Download(path); err != nil {
 		fmt.Println(err)
 		responseBody.Msg = err.Error()
-		return &responseBody
 	} else {
 		defer sftpFile.Close()
 		c.Writer.WriteHeader(http.StatusOK)
