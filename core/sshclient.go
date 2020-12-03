@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -23,6 +24,9 @@ func DecodedMsgToSSHClient(sshInfo string) (SSHClient, error) {
 	err = json.Unmarshal(decoded, &client)
 	if err != nil {
 		return client, err
+	}
+	if strings.Contains(client.IpAddress, ":") && string(client.IpAddress[0]) != "[" {
+		client.IpAddress = "[" + client.IpAddress + "]"
 	}
 	return client, nil
 }
@@ -171,9 +175,9 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, d time.Duration) {
 		// 主循环
 		for {
 			select {
-			case <- stopCh:
+			case <-stopCh:
 				return
-			case <- stopTicker.C:
+			case <-stopTicker.C:
 				ws.WriteMessage(1, []byte("\033[33m已超时关闭连接!\033[0m"))
 				ws.Close()
 				return
@@ -211,7 +215,7 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, d time.Duration) {
 func (sclient *SSHClient) ExecRemoteCommand(command string) (string, error) {
 	//创建ssh登陆配置
 	config := &ssh.ClientConfig{
-		Timeout:         time.Second,//ssh 连接time out 时间一秒钟, 如果ssh验证错误 会在一秒内返回
+		Timeout:         time.Second, //ssh 连接time out 时间一秒钟, 如果ssh验证错误 会在一秒内返回
 		User:            sclient.Username,
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(), //这个可以， 但是不够安全
 	}
@@ -221,7 +225,7 @@ func (sclient *SSHClient) ExecRemoteCommand(command string) (string, error) {
 	addr := fmt.Sprintf("%s:%d", sclient.IpAddress, sclient.Port)
 	sshClient, err := ssh.Dial("tcp", addr, config)
 	if err != nil {
-		fmt.Println("创建ssh client 失败: ",err)
+		fmt.Println("创建ssh client 失败: ", err)
 		return "", err
 	}
 	defer sshClient.Close()
@@ -229,14 +233,14 @@ func (sclient *SSHClient) ExecRemoteCommand(command string) (string, error) {
 	//创建ssh-session
 	session, err := sshClient.NewSession()
 	if err != nil {
-		fmt.Println("创建ssh session 失败: ",err)
+		fmt.Println("创建ssh session 失败: ", err)
 		return "", err
 	}
 	defer session.Close()
 	//执行远程命令
-	combo,err := session.CombinedOutput(command)
+	combo, err := session.CombinedOutput(command)
 	if err != nil {
-		fmt.Println("远程执行cmd 失败: ",err)
+		fmt.Println("远程执行cmd 失败: ", err)
 		return "", err
 	}
 	return string(combo), nil
