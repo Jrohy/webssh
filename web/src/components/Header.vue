@@ -30,6 +30,7 @@
                                 v-for="item in sshList"
                                 :key="item.host" :command="item">
                                 {{item.host}}
+                                <i @click="cleanHistory(item)" class="el-icon-close"></i>
                             </el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
@@ -69,6 +70,15 @@ export default {
         handleCommand(command) {
             this.$store.commit('SET_SSH', command)
             this.$store.commit('SET_PASS', '')
+        },
+        cleanHistory(command) {
+            const sshListObj = this.sshList
+            sshListObj.forEach((v, i) => {
+                if (v.host === command.host) {
+                    sshListObj.splice(i, 1)
+                }
+            })
+            this.$store.commit('SET_LIST', window.btoa(JSON.stringify(sshListObj)))
         }
     },
     mounted() {
