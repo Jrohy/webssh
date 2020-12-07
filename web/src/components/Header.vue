@@ -28,7 +28,7 @@
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item
                                 v-for="item in sshList"
-                                :key="item.host" :command="item">
+                                :key="item.host" :command="item" style="padding:0px 5px 0px 15px">
                                 {{item.host}}
                                 <i @click="cleanHistory(item)" class="el-icon-close"></i>
                             </el-dropdown-item>
