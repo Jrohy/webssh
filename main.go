@@ -22,7 +22,7 @@ var (
 
 func init() {
 	flag.IntVar(&timeout, "t", 60, "ssh连接超时时间(min)")
-	flag.BoolVar(&savePass, "s", true, "是否保存ssh密码")
+	flag.BoolVar(&savePass, "s", false, "是否保存ssh密码")
 	flag.Parse()
 }
 
