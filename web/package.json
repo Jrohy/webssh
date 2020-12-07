@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "axios": "^0.19.2",
-    "core-js": "^3.8.0",
+    "core-js": "^3.8.1",
     "element-ui": "^2.14.1",
     "sortablejs": "^1.12.0",
     "vue": "^2.6.12",
@@ -44,7 +44,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.1.0",
     "eslint-plugin-vue": "^6.2.2",
-    "sass": "^1.29.0",
+    "sass": "^1.30.0",
     "sass-loader": "^8.0.2",
     "svg-sprite-loader": "^3.9.2",
     "vue-template-compiler": "^2.6.12",
