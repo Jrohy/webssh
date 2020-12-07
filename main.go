@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 	"webssh/controller"
 
@@ -14,11 +16,13 @@ import (
 
 var (
 	port    = flag.Int("p", 5032, "服务运行端口")
-	timeout int
+	timeout  int
+	savePass bool
 )
 
 func init() {
 	flag.IntVar(&timeout, "t", 60, "ssh连接超时时间(min)")
+	flag.BoolVar(&savePass, "s", true, "是否保存ssh密码")
 	flag.Parse()
 }
 
@@ -39,6 +43,21 @@ func main() {
 	staticRouter(server)
 	server.GET("/term", func(c *gin.Context) {
 		controller.TermWs(c, time.Duration(timeout)*time.Minute)
+	})
+	server.GET("/check", func(c *gin.Context) {
+		envVal, ok := os.LookupEnv("savePass")
+		if ok {
+			b, err := strconv.ParseBool(envVal)
+			if err != nil {
+				savePass = false
+			} else {
+				savePass = b
+			}
+		}
+		c.JSON(200, map[string]interface{}{
+			"savePass":   savePass,
+			"result":     controller.CheckSSH(c),
+		})
 	})
 	file := server.Group("/file")
 	{

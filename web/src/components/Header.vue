@@ -69,7 +69,9 @@ export default {
     methods: {
         handleCommand(command) {
             this.$store.commit('SET_SSH', command)
-            this.$store.commit('SET_PASS', '')
+            if (command.password === undefined) {
+                this.$store.commit('SET_PASS', '')
+            }
         },
         cleanHistory(command) {
             const sshListObj = this.sshList
@@ -85,7 +87,9 @@ export default {
         if (this.sshList.length > 0) {
             const latestSSH = this.sshList[this.sshList.length - 1]
             this.$store.commit('SET_SSH', latestSSH)
-            this.$store.commit('SET_PASS', '')
+            if (latestSSH.password === undefined) {
+                this.$store.commit('SET_PASS', '')
+            }
         }
     },
     computed: {

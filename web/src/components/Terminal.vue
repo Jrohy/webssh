@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { fileList } from '@/api/file'
+import { checkSSH } from '@/api/common'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { AttachAddon } from 'xterm-addon-attach'
@@ -105,15 +105,20 @@ export default {
             // 深度拷贝对象
             this.ssh = Object.assign({}, sshInfo)
             // 校验ssh连接信息是否正确
-            const result = await fileList('/', this.$store.getters.sshReq)
-            if (result.Msg !== 'success') {
+            const reqResult = await checkSSH(this.$store.getters.sshReq)
+            if (reqResult.result.Msg !== 'success') {
                 return
             }
+            const savePass = reqResult.savePass
             document.title = sshInfo.host
             this.$store.commit('SET_TAB', sshInfo.host)
             let sshList = this.$store.state.sshList
             if (sshList === null) {
-                sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}}]`
+                if (savePass) {
+                    sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}, "password":${sshInfo.password}}]`
+                } else {
+                    sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}}]`
+                }
             } else {
                 const sshListObj = JSON.parse(window.atob(sshList))
                 sshListObj.forEach((v, i) => {
@@ -126,6 +131,9 @@ export default {
                     username: sshInfo.username,
                     port: sshInfo.port
                 })
+                if (savePass) {
+                    sshListObj[sshListObj.length - 1].password = sshInfo.password
+                }
                 sshList = JSON.stringify(sshListObj)
             }
             this.$store.commit('SET_LIST', window.btoa(sshList))
