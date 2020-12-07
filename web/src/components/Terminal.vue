@@ -18,7 +18,8 @@ export default {
             term: null,
             ws: null,
             resetClose: false,
-            ssh: null
+            ssh: null,
+            savePass: false
         }
     },
     mounted() {
@@ -69,7 +70,10 @@ export default {
             this.ws.onclose = e => {
                 console.log(Date(), 'onclose')
                 if (!self.resetClose) {
-                    this.$store.commit('SET_PASS', '')
+                    if (!this.savePass) {
+                        this.$store.commit('SET_PASS', '')
+                        this.ssh.password = ''
+                    }
                     this.$message({
                         message: 'websocket连接已断开!',
                         type: 'warning',
@@ -77,7 +81,6 @@ export default {
                         showClose: true
                     })
                     this.ws = null
-                    this.ssh.password = ''
                 }
                 heartCheck.stop()
                 self.resetClose = false
@@ -105,16 +108,17 @@ export default {
             // 深度拷贝对象
             this.ssh = Object.assign({}, sshInfo)
             // 校验ssh连接信息是否正确
-            const reqResult = await checkSSH(this.$store.getters.sshReq)
-            if (reqResult.result.Msg !== 'success') {
+            const result = await checkSSH(this.$store.getters.sshReq)
+            if (result.Msg !== 'success') {
                 return
+            } else {
+                this.savePass = result.Data.savePass
             }
-            const savePass = reqResult.savePass
             document.title = sshInfo.host
             this.$store.commit('SET_TAB', sshInfo.host)
             let sshList = this.$store.state.sshList
             if (sshList === null) {
-                if (savePass) {
+                if (this.savePass) {
                     sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}, "password":${sshInfo.password}}]`
                 } else {
                     sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}}]`
@@ -131,7 +135,7 @@ export default {
                     username: sshInfo.username,
                     port: sshInfo.port
                 })
-                if (savePass) {
+                if (this.savePass) {
                     sshListObj[sshListObj.length - 1].password = sshInfo.password
                 }
                 sshList = JSON.stringify(sshListObj)

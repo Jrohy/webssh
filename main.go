@@ -23,6 +23,15 @@ var (
 func init() {
 	flag.IntVar(&timeout, "t", 60, "ssh连接超时时间(min)")
 	flag.BoolVar(&savePass, "s", false, "保存ssh密码")
+	envVal, ok := os.LookupEnv("savePass")
+	if ok {
+		b, err := strconv.ParseBool(envVal)
+		if err != nil {
+			savePass = false
+		} else {
+			savePass = b
+		}
+	}
 	flag.Parse()
 }
 
@@ -45,19 +54,11 @@ func main() {
 		controller.TermWs(c, time.Duration(timeout)*time.Minute)
 	})
 	server.GET("/check", func(c *gin.Context) {
-		envVal, ok := os.LookupEnv("savePass")
-		if ok {
-			b, err := strconv.ParseBool(envVal)
-			if err != nil {
-				savePass = false
-			} else {
-				savePass = b
-			}
-		}
-		c.JSON(200, map[string]interface{}{
+		responseBody := controller.CheckSSH(c)
+		responseBody.Data = map[string]interface{}{
 			"savePass": savePass,
-			"result":   controller.CheckSSH(c),
-		})
+		}
+		c.JSON(200, responseBody)
 	})
 	file := server.Group("/file")
 	{
