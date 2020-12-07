@@ -17,6 +17,7 @@ Usage of ./webssh_linux_amd64:
         服务运行端口 (default 5032)
   -t int
         ssh连接超时时间(min) (default 60)
+  -s    保存ssh密码
 ```
 
 ## 原理
