@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	port    = flag.Int("p", 5032, "服务运行端口")
+	port     = flag.Int("p", 5032, "服务运行端口")
 	timeout  int
 	savePass bool
 )
@@ -55,8 +55,8 @@ func main() {
 			}
 		}
 		c.JSON(200, map[string]interface{}{
-			"savePass":   savePass,
-			"result":     controller.CheckSSH(c),
+			"savePass": savePass,
+			"result":   controller.CheckSSH(c),
 		})
 	})
 	file := server.Group("/file")

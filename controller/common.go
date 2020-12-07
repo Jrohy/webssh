@@ -37,4 +37,3 @@ func CheckSSH(c *gin.Context) *ResponseBody {
 	}
 	return &responseBody
 }
-
