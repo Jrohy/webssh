@@ -1,7 +1,7 @@
 <template>
     <el-row>
         <el-col>
-            <el-form :inline="true" style="padding-top: 15px" :model="sshInfo" :rules="checkRules">
+            <el-form :inline="true" style="padding-top: 10px;" :model="sshInfo" :rules="checkRules">
                 <el-form-item label="Host" size="small" prop="host">
                     <el-input v-model="sshInfo.host" placeholder="请输入远程host地址" @keyup.enter.native="$emit('ssh-select')"></el-input>
                 </el-form-item>
@@ -28,7 +28,7 @@
                         <el-dropdown-menu slot="dropdown">
                             <el-dropdown-item
                                 v-for="item in sshList"
-                                :key="item.host" :command="item" style="padding:0px 5px 0px 15px">
+                                :key="item.host" :command="item" style="padding:0px 5px 0px 10px">
                                 {{item.host}}
                                 <i @click="cleanHistory(item)" class="el-icon-close"></i>
                             </el-dropdown-item>

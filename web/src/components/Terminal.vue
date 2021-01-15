@@ -33,13 +33,13 @@ export default {
             if (this.$store.state.sshInfo.password === '') {
                 return
             }
+            const termWeb = document.getElementById(this.id)
+            termWeb.style.height = (document.body.clientHeight - 102) + 'px'
             const sshReq = this.$store.getters.sshReq
             this.close()
             const prefix = process.env.NODE_ENV === 'production' ? '' : '/ws'
             const fitAddon = new FitAddon()
-            this.term = new Terminal({
-                rows: Math.floor(document.documentElement.clientHeight / 18)
-            })
+            this.term = new Terminal()
             this.term.loadAddon(fitAddon)
             this.term.open(document.getElementById(this.id))
             try {
@@ -159,5 +159,5 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
 </style>

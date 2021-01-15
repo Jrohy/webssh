@@ -1,7 +1,7 @@
 <template>
     <div class="MainContainer">
         <el-button type="primary" size="small" @click="getFileList(); dialogVisible = true">文件管理</el-button>
-        <el-dialog :title="'文件管理(' + this.$store.state.sshInfo.host + ')'" :visible.sync="dialogVisible" top="5vh">
+        <el-dialog :title="'文件管理(' + this.$store.state.sshInfo.host + ')'" :visible.sync="dialogVisible" top="5vh" :width="dialogWidth">
             <el-row>
                 <el-col :span="18">
                     <el-input v-model="currentPath" @keyup.enter.native="getFileList()"></el-input>
@@ -53,11 +53,18 @@ export default {
             downloadFilePath: '',
             currentPath: '',
             clientHeight: 0,
-            uploadTip: ''
+            uploadTip: '',
+            dialogWidth: '50%'
         }
     },
     created() {
-        this.clientHeight = document.body.clientHeight - 185
+        this.clientHeight = document.body.clientHeight - 200
+    },
+    mounted() {
+        this.setDialogWidth()
+        window.onresize = () => {
+            this.setDialogWidth()
+        }
     },
     computed: {
         ...mapState(['currentTab']),
@@ -77,6 +84,14 @@ export default {
         }
     },
     methods: {
+        setDialogWidth() {
+            const clientWith = document.body.clientWidth
+            if (clientWith < 600) {
+                this.dialogWidth = '98%'
+            } else {
+                this.dialogWidth = '50%'
+            }
+        },
         openUploadDialog() {
             this.uploadTip = `当前上传目录: ${this.currentPath}`
             this.uploadVisible = true
@@ -138,6 +153,9 @@ export default {
 
 <style lang="scss">
 .MainContainer {
+    .el-dialog__wrapper {
+        overflow: hidden;
+    }
     .el-input__inner {
         border: 0 none;
         border-bottom: 1px solid #ccc;
