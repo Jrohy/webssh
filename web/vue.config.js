@@ -6,7 +6,7 @@ const AddAssetHtmlPlugin = require('add-asset-html-webpack-plugin')
 
 const proxyTargetMap = {
     prod: 'https://xxx.xxx.com/',
-    dev: 'http://192.168.37.163:5032'
+    dev: 'http://127.0.0.1:5032'
 }
 const proxyTarget = proxyTargetMap[process.env.API_TYPE] || proxyTargetMap.prod
 const wsTarget = proxyTarget.replace('http', 'ws')
