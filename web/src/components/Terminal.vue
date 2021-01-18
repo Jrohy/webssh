@@ -119,7 +119,7 @@ export default {
             let sshList = this.$store.state.sshList
             if (sshList === null) {
                 if (this.savePass) {
-                    sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}, "password":${sshInfo.password}}]`
+                    sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}, "password":"${sshInfo.password}"}]`
                 } else {
                     sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}}]`
                 }
