@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strconv"
 	"strings"
 	"time"
 	"unicode/utf8"
@@ -66,12 +67,6 @@ func (sclient *SSHClient) GenerateClient() error {
 
 // InitTerminal 初始化终端
 func (sclient *SSHClient) InitTerminal(terminal Terminal) *SSHClient {
-	session, err := sclient.Client.NewSession()
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-	sclient.Session = session
 	channel, inRequests, err := sclient.Client.OpenChannel("session", nil)
 	if err != nil {
 		log.Println(err)
@@ -121,7 +116,7 @@ func (sclient *SSHClient) InitTerminal(terminal Terminal) *SSHClient {
 }
 
 // Connect ws连接
-func (sclient *SSHClient) Connect(ws *websocket.Conn, d time.Duration) {
+func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration) {
 	stopCh := make(chan struct{})
 	//这里第一个协程获取用户的输入
 	go func() {
@@ -135,6 +130,23 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, d time.Duration) {
 			if string(p) == "ping" {
 				continue
 			}
+			if strings.Contains(string(p), "resize") {
+				resizeSlice := strings.Split(string(p), ":")
+				rows, _ := strconv.Atoi(resizeSlice[1])
+				cols, _ := strconv.Atoi(resizeSlice[2])
+				req := ptyWindowChangeMsg{
+					Columns: uint32(cols),
+					Rows:    uint32(rows),
+					Width:   uint32(cols * 8),
+					Height:  uint32(rows * 8),
+				}
+				_, err := sclient.channel.SendRequest("window-change", false, ssh.Marshal(&req))
+				if err != nil {
+					log.Println(err)
+					return
+				}
+				continue
+			}
 			_, err = sclient.channel.Write(p)
 			if err != nil {
 				close(stopCh)
@@ -146,7 +158,7 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, d time.Duration) {
 	//第二个协程将远程主机的返回结果返回给用户
 	go func() {
 		// 设置ws超时时间定时器
-		stopTicker := time.NewTicker(d)
+		stopTicker := time.NewTicker(timeout)
 		defer stopTicker.Stop()
 
 		br := bufio.NewReader(sclient.channel)
@@ -159,7 +171,6 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, d time.Duration) {
 		// 另起一个协程, 一个死循环不断的读取ssh channel的数据, 并传给r信道直到连接断开
 		go func() {
 			defer sclient.Client.Close()
-			defer sclient.Session.Close()
 
 			for {
 				x, size, err := br.ReadRune()

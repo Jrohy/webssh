@@ -102,6 +102,10 @@ export default {
                     return false
                 }
             })
+            window.addEventListener('resize', () => {
+                fitAddon.fit()
+                self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
+            })
         },
         async connected() {
             const sshInfo = this.$store.state.sshInfo

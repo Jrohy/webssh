@@ -14,6 +14,13 @@ type ptyRequestMsg struct {
 	Modelist string
 }
 
+type ptyWindowChangeMsg struct {
+	Columns uint32
+	Rows    uint32
+	Width   uint32
+	Height  uint32
+}
+
 // Terminal 结构体
 type Terminal struct {
 	Columns uint32 `json:"cols"`
@@ -26,7 +33,6 @@ type SSHClient struct {
 	Password  string `json:"password"`
 	IPAddress string `json:"ipaddress"`
 	Port      int    `json:"port"`
-	Session   *ssh.Session
 	Client    *ssh.Client
 	Sftp      *sftp.Client
 	channel   ssh.Channel
