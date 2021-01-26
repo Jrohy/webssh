@@ -91,6 +91,10 @@ export default {
             const attachAddon = new AttachAddon(this.ws)
             this.term.loadAddon(attachAddon)
             this.term.attachCustomKeyEventHandler((e) => {
+                // f11全屏事件
+                if (e.key === 'F11') {
+                    return false
+                }
                 // ctrl + v
                 if (e.ctrlKey && e.key === 'v') {
                     document.execCommand('copy')
@@ -103,6 +107,7 @@ export default {
                 }
             })
             window.addEventListener('resize', () => {
+                termWeb.style.height = (document.body.clientHeight - 102) + 'px'
                 fitAddon.fit()
                 self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
             })

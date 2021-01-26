@@ -64,6 +64,7 @@ export default {
         this.setDialogWidth()
         window.onresize = () => {
             this.setDialogWidth()
+            this.clientHeight = document.body.clientHeight - 200
         }
     },
     computed: {
