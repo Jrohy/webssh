@@ -91,8 +91,7 @@ export default {
             const attachAddon = new AttachAddon(this.ws)
             this.term.loadAddon(attachAddon)
             this.term.attachCustomKeyEventHandler((e) => {
-                // f11全屏事件
-                if (e.key === 'F11') {
+                if (e.key === 'F11' || e.key === 'F12') {
                     return false
                 }
                 // ctrl + v
