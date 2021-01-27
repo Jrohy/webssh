@@ -19,7 +19,8 @@ export default {
             ws: null,
             resetClose: false,
             ssh: null,
-            savePass: false
+            savePass: false,
+            fontSize: 15
         }
     },
     mounted() {
@@ -56,7 +57,9 @@ export default {
                 },
                 start: function() {
                     this.intervalObj = setInterval(function() {
-                        self.ws.send('ping')
+                        if (self.ws.readyState === 1) {
+                            self.ws.send('ping')
+                        }
                     }, this.timeout)
                 }
             }
@@ -91,7 +94,8 @@ export default {
             const attachAddon = new AttachAddon(this.ws)
             this.term.loadAddon(attachAddon)
             this.term.attachCustomKeyEventHandler((e) => {
-                if (e.key === 'F11' || e.key === 'F12') {
+                const keyArray = ['F5', 'F11', 'F12']
+                if (keyArray.indexOf(e.key) > -1) {
                     return false
                 }
                 // ctrl + v
@@ -103,6 +107,25 @@ export default {
                 if (e.ctrlKey && e.key === 'c' && self.term.hasSelection()) {
                     document.execCommand('copy')
                     return false
+                }
+            })
+            // detect available wheel event
+            // 各个厂商的高版本浏览器都支持"wheel"
+            // Webkit 和 IE一定支持"mousewheel"
+            // "DOMMouseScroll" 用于低版本的firefox
+            const wheelSupport = 'onwheel' in document.createElement('div') ? 'wheel' : document.onmousewheel !== undefined ? 'mousewheel' : 'DOMMouseScroll'
+            termWeb.addEventListener(wheelSupport, (e) => {
+                if (e.ctrlKey) {
+                    e.preventDefault()
+                    if (e.deltaY < 0) {
+                        self.term.setOption('fontSize', ++this.fontSize)
+                    } else {
+                        self.term.setOption('fontSize', --this.fontSize)
+                    }
+                    fitAddon.fit()
+                    if (self.ws.readyState === 1) {
+                        self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
+                    }
                 }
             })
             window.addEventListener('resize', () => {

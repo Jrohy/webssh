@@ -157,6 +157,11 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration) {
 
 	//第二个协程将远程主机的返回结果返回给用户
 	go func() {
+		defer func() {
+			if err := recover(); err != nil {
+				log.Println(err)
+			}
+		}()
 		// 设置ws超时时间定时器
 		stopTicker := time.NewTicker(timeout)
 		defer stopTicker.Stop()
@@ -175,10 +180,11 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration) {
 			for {
 				x, size, err := br.ReadRune()
 				if err != nil {
-					log.Println(err)
+					if err.Error() != "EOF" {
+						log.Println(err)
+					}
 					ws.WriteMessage(1, []byte("\033[33m已经关闭连接!\033[0m"))
 					ws.Close()
-					close(stopCh)
 					return
 				}
 				if size > 0 {
