@@ -108,7 +108,9 @@ export default {
             window.addEventListener('resize', () => {
                 termWeb.style.height = (document.body.clientHeight - 102) + 'px'
                 fitAddon.fit()
-                self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
+                if (self.ws.readyState === 1) {
+                    self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
+                }
             })
         },
         async connected() {
