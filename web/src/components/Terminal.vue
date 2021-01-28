@@ -57,7 +57,7 @@ export default {
                 },
                 start: function() {
                     this.intervalObj = setInterval(function() {
-                        if (self.ws.readyState === 1) {
+                        if (self.ws !== null && self.ws.readyState === 1) {
                             self.ws.send('ping')
                         }
                     }, this.timeout)
@@ -123,7 +123,7 @@ export default {
                         self.term.setOption('fontSize', --this.fontSize)
                     }
                     fitAddon.fit()
-                    if (self.ws.readyState === 1) {
+                    if (self.ws !== null && self.ws.readyState === 1) {
                         self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
                     }
                 }
@@ -131,7 +131,7 @@ export default {
             window.addEventListener('resize', () => {
                 termWeb.style.height = (document.body.clientHeight - 102) + 'px'
                 fitAddon.fit()
-                if (self.ws.readyState === 1) {
+                if (self.ws !== null && self.ws.readyState === 1) {
                     self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
                 }
             })
