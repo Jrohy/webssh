@@ -98,7 +98,7 @@ export default {
             this.uploadVisible = true
         },
         beforeUpload(file) {
-            this.uploadTip = `正在上传${file.name} 到 ${this.currentPath}, 请稍等..`
+            this.uploadTip = `正在上传${file.name} 到 ${this.currentPath}, 请勿关闭窗口..`
             return true
         },
         uploadSuccess(response, file, fileList) {

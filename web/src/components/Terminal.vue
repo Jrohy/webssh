@@ -43,11 +43,7 @@ export default {
             this.term = new Terminal()
             this.term.loadAddon(fitAddon)
             this.term.open(document.getElementById(this.id))
-            try {
-                fitAddon.fit()
-            } catch (e) {
-
-            }
+            try { fitAddon.fit() } catch (e) {}
             const self = this
             const heartCheck = {
                 timeout: 5000, // 5s发一次心跳
@@ -122,7 +118,7 @@ export default {
                     } else {
                         self.term.setOption('fontSize', --this.fontSize)
                     }
-                    fitAddon.fit()
+                    try { fitAddon.fit() } catch (e) {}
                     if (self.ws !== null && self.ws.readyState === 1) {
                         self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
                     }
@@ -130,7 +126,7 @@ export default {
             })
             window.addEventListener('resize', () => {
                 termWeb.style.height = (document.body.clientHeight - 102) + 'px'
-                fitAddon.fit()
+                try { fitAddon.fit() } catch (e) {}
                 if (self.ws !== null && self.ws.readyState === 1) {
                     self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
                 }
