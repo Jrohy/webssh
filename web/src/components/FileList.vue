@@ -13,7 +13,7 @@
                             <el-button type="primary" size="mini" icon="el-icon-refresh" @click="getFileList()"></el-button>
                             <el-button type="primary" size="mini" icon="el-icon-upload" @click="openUploadDialog()"></el-button>
                         </el-button-group>
-                        <el-dialog title="文件上传" :visible.sync="uploadVisible" append-to-body width="32%">
+                        <el-dialog title="文件上传" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
                             <el-upload class="upload-demo" drag :action="uploadUrl" multiple :data="uploadData" :before-upload="beforeUpload" :on-success="uploadSuccess">
                                 <i class="el-icon-upload"></i>
                                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -54,7 +54,8 @@ export default {
             currentPath: '',
             clientHeight: 0,
             uploadTip: '',
-            dialogWidth: '50%'
+            dialogWidth: '50%',
+            uploadWidth: '32%'
         }
     },
     created() {
@@ -89,8 +90,13 @@ export default {
             const clientWith = document.body.clientWidth
             if (clientWith < 600) {
                 this.dialogWidth = '98%'
+                this.uploadWidth = '100%'
+            } else if (clientWith >= 600 && clientWith < 1000) {
+                this.dialogWidth = '80%'
+                this.uploadWidth = '58%'
             } else {
                 this.dialogWidth = '50%'
+                this.uploadWidth = '32%'
             }
         },
         openUploadDialog() {
