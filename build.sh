@@ -30,13 +30,19 @@ function upload() {
     uploadfile $DGST
 }
 
+VERSION=`git describe --tags $(git rev-list --tags --max-count=1)`
+NOW=`TZ=Asia/Shanghai date "+%Y%m%d-%H%M"`
+GO_VERSION=`go version|awk '{print $3,$4}'`
+GIT_VERSION=`git rev-parse HEAD`
+LDFLAGS="-w -s -X 'main.version=version: $VERSION' -X 'main.buildDate=buildDate: $NOW' -X 'main.goVersion=goVersion: $GO_VERSION' -X 'main.gitVersion=gitVersion: $GIT_VERSION'"
+
 packr2
 
-GOOS=windows GOARCH=amd64 go build -ldflags "-w -s" -o result/webssh_windows_amd64.exe .
-GOOS=windows GOARCH=386 go build -ldflags "-w -s" -o result/webssh_windows_386.exe .
-GOOS=linux GOARCH=amd64 go build -ldflags "-w -s" -o result/webssh_linux_amd64 .
-GOOS=linux GOARCH=arm64 go build -ldflags "-w -s" -o result/webssh_linux_arm64 .
-GOOS=darwin GOARCH=amd64 go build -ldflags "-w -s" -o result/webssh_darwin_amd64 .
+GOOS=windows GOARCH=amd64 go build -ldflags $LDFLAGS -o result/webssh_windows_amd64.exe .
+GOOS=windows GOARCH=386 go build -ldflags $LDFLAGS -o result/webssh_windows_386.exe .
+GOOS=linux GOARCH=amd64 go build -ldflags $LDFLAGS -o result/webssh_linux_amd64 .
+GOOS=linux GOARCH=arm64 go build -ldflags $LDFLAGS -o result/webssh_linux_arm64 .
+GOOS=darwin GOARCH=amd64 go build -ldflags $LDFLAGS -o result/webssh_darwin_amd64 .
 
 cd result
 

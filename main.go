@@ -15,9 +15,14 @@ import (
 )
 
 var (
-	port     = flag.Int("p", 5032, "服务运行端口")
-	timeout  int
-	savePass bool
+	port       = flag.Int("p", 5032, "服务运行端口")
+	v          = flag.Bool("v", false, "显示版本号")
+	timeout    int
+	savePass   bool
+	version    string
+	buildDate  string
+	goVersion  string
+	gitVersion string
 )
 
 func init() {
@@ -33,6 +38,13 @@ func init() {
 		}
 	}
 	flag.Parse()
+	if *v {
+		fmt.Printf("Version: %s\n\n", version)
+		fmt.Printf("BuildDate: %s\n\n", buildDate)
+		fmt.Printf("GoVersion: %s\n\n", goVersion)
+		fmt.Printf("GitVersion: %s\n\n", gitVersion)
+		os.Exit(0)
+	}
 }
 
 func staticRouter(router *gin.Engine) {
