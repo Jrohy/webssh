@@ -18,6 +18,7 @@ Usage of ./webssh_linux_amd64:
   -t int
         ssh连接超时时间(min) (default 60)
   -s    保存ssh密码
+  -v    显示版本号
 ```
 
 ## 原理
