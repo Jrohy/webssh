@@ -19,7 +19,7 @@
     "sortablejs": "^1.13.0",
     "vue": "^2.6.12",
     "vuex": "^3.6.2",
-    "xterm": "^4.9.0",
+    "xterm": "^4.10.0",
     "xterm-addon-attach": "^0.6.0",
     "xterm-addon-fit": "^0.3.0"
   },
@@ -44,7 +44,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.1.0",
     "eslint-plugin-vue": "^6.2.2",
-    "sass": "^1.32.5",
+    "sass": "^1.32.6",
     "sass-loader": "^8.0.2",
     "svg-sprite-loader": "^3.9.2",
     "vue-template-compiler": "^2.6.12",
