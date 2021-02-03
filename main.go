@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 	"webssh/controller"
 
@@ -17,12 +18,15 @@ import (
 var (
 	port       = flag.Int("p", 5032, "服务运行端口")
 	v          = flag.Bool("v", false, "显示版本号")
+	authInfo   = flag.String("a", "", "开启账号密码登录验证, '-a user:pass'的格式传参")
 	timeout    int
 	savePass   bool
 	version    string
 	buildDate  string
 	goVersion  string
 	gitVersion string
+	username   string
+	password   string
 )
 
 func init() {
@@ -45,10 +49,28 @@ func init() {
 		fmt.Printf("GitVersion: %s\n\n", gitVersion)
 		os.Exit(0)
 	}
+	if *authInfo != "" {
+		accountInfo := strings.Split(*authInfo, ":")
+		if len(accountInfo) != 2 || accountInfo[0] == "" || accountInfo[1] == "" {
+			fmt.Println("请按'-a user:pass'的格式来传参, 且账号密码都不能为空!")
+			os.Exit(0)
+		}
+		username, password = accountInfo[0], accountInfo[1]
+	}
 }
 
 func staticRouter(router *gin.Engine) {
 	box := packr.New("websshBox", "./web/dist")
+	if password != "" {
+		accountList := map[string]string{
+			username: password,
+		}
+		authorized := router.Group("/", gin.BasicAuth(accountList))
+		authorized.GET("", func(c *gin.Context) {
+			http.FileServer(box).ServeHTTP(c.Writer, c.Request)
+			c.Abort()
+		})
+	}
 	router.Use(func(c *gin.Context) {
 		requestURL := c.Request.URL.Path
 		if box.Has(requestURL) || requestURL == "/" {
