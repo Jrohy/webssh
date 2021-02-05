@@ -30,7 +30,7 @@ var (
 )
 
 func init() {
-	flag.IntVar(&timeout, "t", 60, "ssh连接超时时间(min)")
+	flag.IntVar(&timeout, "t", 120, "ssh连接超时时间(min)")
 	flag.BoolVar(&savePass, "s", false, "保存ssh密码")
 	envVal, ok := os.LookupEnv("savePass")
 	if ok {

@@ -26,14 +26,15 @@
             <el-table :data="fileList" :height="clientHeight" @row-dblclick="rowClick">
                 <el-table-column
                     label="名字"
+                    :width="nameWidth"
                     sortable :sort-method="nameSort">
                     <template slot-scope="scope">
-                        <p v-if="scope.row.FType === 1" style="color:#0c60b5" class="el-icon-folder"> {{ scope.row.Name }}</p>
-                        <p v-else-if="scope.row.FType === 0" class="el-icon-document"> {{ scope.row.Name }}</p>
+                        <p v-if="scope.row.IsDir === true" style="color:#0c60b5" class="el-icon-folder"> {{ scope.row.Name }}</p>
+                        <p v-else-if="scope.row.IsDir === false" class="el-icon-document"> {{ scope.row.Name }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column label="大小" prop="Size" width="100"></el-table-column>
-                <el-table-column label="修改时间" prop="ModifyTime"></el-table-column>
+                <el-table-column label="大小" prop="Size"></el-table-column>
+                <el-table-column label="修改时间" prop="ModifyTime" sortable></el-table-column>
             </el-table>
         </el-dialog>
     </div>
@@ -55,7 +56,8 @@ export default {
             clientHeight: 0,
             uploadTip: '',
             dialogWidth: '50%',
-            uploadWidth: '32%'
+            uploadWidth: '32%',
+            nameWidth: 260
         }
     },
     created() {
@@ -91,12 +93,15 @@ export default {
             if (clientWith < 600) {
                 this.dialogWidth = '98%'
                 this.uploadWidth = '100%'
+                this.nameWidth = 120
             } else if (clientWith >= 600 && clientWith < 1000) {
                 this.dialogWidth = '80%'
                 this.uploadWidth = '58%'
+                this.nameWidth = 220
             } else {
                 this.dialogWidth = '50%'
                 this.uploadWidth = '32%'
+                this.nameWidth = 260
             }
         },
         openUploadDialog() {
@@ -114,14 +119,14 @@ export default {
             return a.Name > b.Name
         },
         rowClick(row) {
-            if (row.FType === 0) {
-                // 文件处理
-                this.downloadFilePath = this.currentPath.charAt(this.currentPath.length - 1) === '/' ? this.currentPath + row.Name : this.currentPath + '/' + row.Name
-                this.downloadFile()
-            } else if (row.FType === 1) {
+            if (row.IsDir) {
                 // 文件夹处理
                 this.currentPath = this.currentPath.charAt(this.currentPath.length - 1) === '/' ? this.currentPath + row.Name : this.currentPath + '/' + row.Name
                 this.getFileList()
+            } else {
+                // 文件处理
+                this.downloadFilePath = this.currentPath.charAt(this.currentPath.length - 1) === '/' ? this.currentPath + row.Name : this.currentPath + '/' + row.Name
+                this.downloadFile()
             }
         },
         async getFileList() {
