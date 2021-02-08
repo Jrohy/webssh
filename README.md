@@ -13,10 +13,12 @@
 ## 命令行
 ```
 Usage of ./webssh_linux_amd64:
+  -a string
+        开启账号密码登录验证, '-a user:pass'的格式传参
   -p int
         服务运行端口 (default 5032)
   -t int
-        ssh连接超时时间(min) (default 60)
+        ssh连接超时时间(min) (default 120)
   -s    保存ssh密码
   -v    显示版本号
 ```
