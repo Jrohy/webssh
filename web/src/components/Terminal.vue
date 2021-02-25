@@ -144,7 +144,6 @@ export default {
                 this.savePass = result.Data.savePass
             }
             document.title = sshInfo.host
-            this.$store.commit('SET_TAB', sshInfo.host)
             let sshList = this.$store.state.sshList
             if (sshList === null) {
                 if (this.savePass) {

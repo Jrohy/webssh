@@ -6,6 +6,9 @@ export default {
         state.sshList = list
         localStorage.setItem('sshList', list)
     },
+    SET_TERMLIST(state, list) {
+        state.termList = list
+    },
     SET_SSH(state, ssh) {
         state.sshInfo.host = ssh.host
         state.sshInfo.username = ssh.username

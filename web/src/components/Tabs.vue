@@ -35,13 +35,22 @@ export default {
     },
     data () {
         return {
-            termList: [],
             currentTerm: '',
             currentTermIndex: 0,
             menuTab: '',
             contextMenuVisible: false,
             left: '',
             top: ''
+        }
+    },
+    computed: {
+        termList: {
+            get() {
+                return this.$store.state.termList
+            },
+            set(v) {
+                this.$store.commit('SET_TERMLIST', v)
+            }
         }
     },
     watch: {
@@ -91,7 +100,7 @@ export default {
                 const tab = this.termList[currMenuIndex]
                 this.currentTerm = tab.name
                 document.title = tab.label
-                this.$store.commit('SET_TAB', tab.label)
+                this.$store.commit('SET_TAB', this.termList[this.currentTermIndex])
                 this.$refs[`${tab.name}`][0].setSSH()
             }
             switch (par) {
@@ -142,21 +151,27 @@ export default {
             }
             this.termList.push({
                 name: `${sshInfo.host}-${this.genID(5)}`,
-                label: sshInfo.host
+                label: sshInfo.host,
+                path: '/'
             })
-            this.currentTerm = this.termList[this.termList.length - 1].name
+            const tab = this.termList[this.termList.length - 1]
+            this.currentTerm = tab.name
             this.currentTermIndex = this.termList.length - 1
+            this.$store.commit('SET_TAB', this.termList[this.currentTermIndex])
         },
-        clickTab(tab) {
-            this.$refs[`${tab.name}`][0].setSSH()
-            document.title = tab.label
-            this.$store.commit('SET_TAB', tab.label)
+        findTerm() {
             for (let i = 0; i < this.termList.length; ++i) {
                 if (this.termList[i].name === this.currentTerm) {
                     this.currentTermIndex = i
                     break
                 }
             }
+            this.$store.commit('SET_TAB', this.termList[this.currentTermIndex])
+        },
+        clickTab(tab) {
+            this.$refs[`${tab.name}`][0].setSSH()
+            document.title = tab.label
+            this.findTerm()
         },
         removeTab(targetName) {
             const tabs = this.termList
@@ -171,8 +186,10 @@ export default {
                     }
                 })
                 this.currentTerm = activeName
+                this.$refs[`${this.currentTerm}`][0].setSSH()
             }
             this.termList = tabs.filter(tab => tab.name !== targetName)
+            this.findTerm()
         }
     }
 }

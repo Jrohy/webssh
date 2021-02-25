@@ -6,5 +6,6 @@ export default {
         password: ''
     },
     sshList: Object.prototype.hasOwnProperty.call(localStorage, 'sshList') ? localStorage.getItem('sshList') : null,
-    currentTab: ''
+    termList: [],
+    currentTab: {}
 }

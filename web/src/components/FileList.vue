@@ -84,7 +84,8 @@ export default {
     },
     watch: {
         currentTab: function() {
-            this.currentPath = '/'
+            this.fileList = []
+            this.currentPath = this.currentTab.path
         }
     },
     methods: {
@@ -130,9 +131,6 @@ export default {
             }
         },
         async getFileList() {
-            if (this.currentPath === '') {
-                this.currentPath = '/'
-            }
             const result = await fileList(this.currentPath, this.$store.getters.sshReq)
             if (result.Msg === 'success') {
                 if (result.Data.list === null) {
@@ -140,9 +138,11 @@ export default {
                 } else {
                     this.fileList = result.Data.list
                 }
+                this.updatePath(this.currentPath)
             } else {
                 this.fileList = []
                 this.$message.error(result.Msg)
+                this.updatePath('/')
             }
         },
         upDirectory() {
@@ -158,6 +158,16 @@ export default {
             const prefix = process.env.NODE_ENV === 'production' ? `${location.origin}` : 'api'
             const downloadUrl = `${prefix}/file/download?path=${this.downloadFilePath}&sshInfo=${this.$store.getters.sshReq}`
             window.open(downloadUrl)
+        },
+        updatePath(path) {
+            const termList = this.$store.state.termList
+            for (let i = 0; i < termList.length; ++i) {
+                if (termList[i].name === this.currentTab.name) {
+                    termList[i].path = path
+                    break
+                }
+            }
+            this.$store.commit('SET_TERMLIST', termList)
         }
     }
 }
