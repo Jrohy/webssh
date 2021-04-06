@@ -36,8 +36,6 @@ GO_VERSION=`go version|awk '{print $3,$4}'`
 GIT_VERSION=`git rev-parse HEAD`
 LDFLAGS="-w -s -X 'main.version=$VERSION' -X 'main.buildDate=$NOW' -X 'main.goVersion=$GO_VERSION' -X 'main.gitVersion=$GIT_VERSION'"
 
-packr2
-
 GOOS=windows GOARCH=amd64 go build -ldflags "$LDFLAGS" -o result/webssh_windows_amd64.exe .
 GOOS=windows GOARCH=386 go build -ldflags "$LDFLAGS" -o result/webssh_windows_386.exe .
 GOOS=linux GOARCH=amd64 go build -ldflags "$LDFLAGS" -o result/webssh_linux_amd64 .
@@ -56,7 +54,5 @@ done
 echo "upload completed!"
 
 cd $SHELL_PATH
-
-packr2 clean
 
 rm -rf result
