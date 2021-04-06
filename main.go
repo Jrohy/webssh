@@ -1,8 +1,10 @@
 package main
 
 import (
+	"embed"
 	"flag"
 	"fmt"
+	"io/fs"
 	"net/http"
 	"os"
 	"strconv"
@@ -12,8 +14,10 @@ import (
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	"github.com/gobuffalo/packr/v2"
 )
+
+//go:embed web/dist/*
+var f embed.FS
 
 var (
 	port       = flag.Int("p", 5032, "服务运行端口")
@@ -60,24 +64,23 @@ func init() {
 }
 
 func staticRouter(router *gin.Engine) {
-	box := packr.New("websshBox", "./web/dist")
 	if password != "" {
 		accountList := map[string]string{
 			username: password,
 		}
 		authorized := router.Group("/", gin.BasicAuth(accountList))
 		authorized.GET("", func(c *gin.Context) {
-			http.FileServer(box).ServeHTTP(c.Writer, c.Request)
-			c.Abort()
+			indexHTML, _ := f.ReadFile("web/dist/" + "index.html")
+			c.Writer.Write(indexHTML)
+		})
+	} else {
+		router.GET("/", func(c *gin.Context) {
+			indexHTML, _ := f.ReadFile("web/dist/" + "index.html")
+			c.Writer.Write(indexHTML)
 		})
 	}
-	router.Use(func(c *gin.Context) {
-		requestURL := c.Request.URL.Path
-		if box.Has(requestURL) || requestURL == "/" {
-			http.FileServer(box).ServeHTTP(c.Writer, c.Request)
-			c.Abort()
-		}
-	})
+	staticFs, _ := fs.Sub(f, "web/dist/static")
+	router.StaticFS("/static", http.FS(staticFs))
 }
 
 func main() {
