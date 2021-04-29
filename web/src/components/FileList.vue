@@ -131,6 +131,7 @@ export default {
             }
         },
         async getFileList() {
+            this.currentPath = this.currentPath.replace(/\/+/g, '/')
             const result = await fileList(this.currentPath, this.$store.getters.sshReq)
             if (result.Msg === 'success') {
                 if (result.Data.list === null) {
@@ -150,7 +151,11 @@ export default {
                 return
             }
             let pathList = this.currentPath.split('/')
-            pathList = pathList.slice(0, pathList.length - 1)
+            if (pathList[pathList.length - 1] === '') {
+                pathList = pathList.slice(0, pathList.length - 2)
+            } else {
+                pathList = pathList.slice(0, pathList.length - 1)
+            }
             this.currentPath = pathList.length === 1 ? '/' : pathList.join('/')
             this.getFileList()
         },
