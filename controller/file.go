@@ -82,13 +82,15 @@ func Bytefmt(bytes uint64) string {
 }
 
 type fileSplice []File
+
 // Len 比较大小
 func (f fileSplice) Len() int { return len(f) }
+
 // Swap 交换
 func (f fileSplice) Swap(i, j int) { f[i], f[j] = f[j], f[i] }
+
 // Less 比大小
 func (f fileSplice) Less(i, j int) bool { return f[i].IsDir }
-
 
 // UploadFile 上传文件
 func UploadFile(c *gin.Context) *ResponseBody {
