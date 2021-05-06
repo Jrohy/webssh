@@ -112,6 +112,7 @@ func UploadFile(c *gin.Context) *ResponseBody {
 		responseBody.Msg = err.Error()
 		return &responseBody
 	}
+	defer sshClient.Sftp.Close()
 	file, header, err := c.Request.FormFile("file")
 	if err != nil {
 		responseBody.Msg = err.Error()
@@ -152,6 +153,7 @@ func DownloadFile(c *gin.Context) *ResponseBody {
 		responseBody.Msg = err.Error()
 		return &responseBody
 	}
+	defer sshClient.Sftp.Close()
 	if sftpFile, err := sshClient.Download(path); err != nil {
 		fmt.Println(err)
 		responseBody.Msg = err.Error()
@@ -182,6 +184,7 @@ func FileList(c *gin.Context) *ResponseBody {
 		responseBody.Msg = err.Error()
 		return &responseBody
 	}
+	defer sshClient.Sftp.Close()
 	files, err := sshClient.Sftp.ReadDir(path)
 	if err != nil {
 		if strings.Contains(err.Error(), "exist") {

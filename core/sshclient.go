@@ -154,7 +154,12 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration) {
 		defer func() {
 			ws.Close()
 			if sclient.Session != nil {
+				sclient.ComboOutput = nil
+				sclient.StdinPipe.Close()
 				sclient.Session.Close()
+				sclient.Client.Close()
+				sclient.Session = nil
+				sclient.Client = nil
 			}
 			if err := recover(); err != nil {
 				log.Println(err)
