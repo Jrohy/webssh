@@ -13,6 +13,7 @@
         <div v-show="contextMenuVisible">
             <ul :style="{left:left+'px',top:top+'px'}" class="contextmenu">
                 <li @click="copyTab()"><el-button type="text" size="mini">复制</el-button></li>
+                <li @click="setScreenfull()"><el-button type="text" size="mini">全屏</el-button></li>
                 <li @click="removeTab(menuTab)"><el-button type="text" size="mini">关闭</el-button></li>
                 <el-divider></el-divider>
                 <li @click="closeTabs('left')"><el-button type="text" size="mini">关闭左边</el-button></li>
@@ -26,6 +27,7 @@
 
 <script>
 import Sortable from 'sortablejs'
+import screenfull from 'screenfull'
 import Terminal from '@/components/Terminal'
 
 export default {
@@ -83,6 +85,16 @@ export default {
         copyTab() {
             this.$refs[`${this.menuTab}`][0].setSSH()
             this.openTerm()
+        },
+        setScreenfull() {
+            if (!screenfull.isEnabled) {
+                this.$message({
+                    message: '暂不不支持全屏',
+                    type: 'warning'
+                })
+                return false
+            }
+            screenfull.toggle()
         },
         closeTabs(par) {
             if (par === 'all') {
