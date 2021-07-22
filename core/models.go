@@ -37,7 +37,6 @@ func (w *wsOutput) Write(p []byte) (int, error) {
 				buf = append(buf, r)
 			}
 		}
-		bufStr = string(buf)
 		p = []byte(string(buf))
 	}
 	err := w.ws.WriteMessage(websocket.TextMessage, p)
