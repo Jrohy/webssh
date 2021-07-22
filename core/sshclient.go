@@ -11,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"unicode/utf8"
 )
 
 // DecodedMsgToSSHClient 字符串信息解析为ssh客户端
@@ -64,7 +63,7 @@ func (sclient *SSHClient) GenerateClient() error {
 }
 
 // InitTerminal 初始化终端
-func (sclient *SSHClient) InitTerminal(rows, cols int) *SSHClient {
+func (sclient *SSHClient) InitTerminal(ws *websocket.Conn, rows, cols int) *SSHClient {
 	sshSession, err := sclient.Client.NewSession()
 	if err != nil {
 		log.Println(err)
@@ -72,10 +71,11 @@ func (sclient *SSHClient) InitTerminal(rows, cols int) *SSHClient {
 	}
 	sclient.Session = sshSession
 	sclient.StdinPipe, _ = sshSession.StdinPipe()
-	comboWriter := new(wsBufferWriter)
+	wsOutput := new(wsOutput)
 	//ssh.stdout and stderr will write output into comboWriter
-	sshSession.Stdout = comboWriter
-	sshSession.Stderr = comboWriter
+	sshSession.Stdout = wsOutput
+	sshSession.Stderr = wsOutput
+	wsOutput.ws = ws
 	modes := ssh.TerminalModes{
 		ssh.ECHO:          1,
 		ssh.TTY_OP_ISPEED: 14400,
@@ -88,31 +88,7 @@ func (sclient *SSHClient) InitTerminal(rows, cols int) *SSHClient {
 	if err := sshSession.Shell(); err != nil {
 		return nil
 	}
-	sclient.ComboOutput = comboWriter
 	return sclient
-}
-
-func flushComboOutput(w *wsBufferWriter, wsConn *websocket.Conn) error {
-	if w.buffer.Len() != 0 {
-		bufStr := w.buffer.String()
-		// 处理非utf8字符
-		if !utf8.ValidString(bufStr) {
-			buf := make([]rune, 0, len(bufStr))
-			for _, r := range bufStr {
-				if r == utf8.RuneError {
-					buf = append(buf, []rune("@")...)
-				} else {
-					buf = append(buf, r)
-				}
-			}
-			bufStr = string(buf)
-		}
-		if err := wsConn.WriteMessage(websocket.TextMessage, []byte(bufStr)); err != nil {
-			return err
-		}
-		w.buffer.Reset()
-	}
-	return nil
 }
 
 // Connect ws连接
@@ -154,7 +130,6 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration) {
 		defer func() {
 			ws.Close()
 			if sclient.Session != nil {
-				sclient.ComboOutput = nil
 				sclient.StdinPipe.Close()
 				sclient.Session.Close()
 				sclient.Client.Close()
@@ -169,9 +144,6 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration) {
 		stopTimer := time.NewTimer(timeout)
 		defer stopTimer.Stop()
 
-		t := time.NewTicker(time.Millisecond * 20)
-		defer t.Stop()
-
 		// 主循环
 		for {
 			select {
@@ -180,10 +152,6 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration) {
 			case <-stopTimer.C:
 				ws.WriteMessage(1, []byte("\033[33m已超时关闭连接!\033[0m"))
 				return
-			case <-t.C:
-				if err := flushComboOutput(sclient.ComboOutput, ws); err != nil {
-					return
-				}
 			}
 		}
 	}()

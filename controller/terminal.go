@@ -48,7 +48,7 @@ func TermWs(c *gin.Context, timeout time.Duration) *ResponseBody {
 		responseBody.Msg = err.Error()
 		return &responseBody
 	}
-	sshClient.InitTerminal(row, col)
+	sshClient.InitTerminal(wsConn, row, col)
 	sshClient.Connect(wsConn, timeout)
 	return &responseBody
 }

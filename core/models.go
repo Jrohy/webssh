@@ -1,36 +1,47 @@
 package core
 
 import (
-	"bytes"
+	"github.com/gorilla/websocket"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 	"io"
-	"sync"
+	"unicode/utf8"
 )
 
 // SSHClient 结构体
 type SSHClient struct {
-	Username    string `json:"username"`
-	Password    string `json:"password"`
-	IPAddress   string `json:"ipaddress"`
-	Port        int    `json:"port"`
-	Client      *ssh.Client
-	Sftp        *sftp.Client
-	StdinPipe   io.WriteCloser
-	Session     *ssh.Session
-	ComboOutput *wsBufferWriter
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	IPAddress string `json:"ipaddress"`
+	Port      int    `json:"port"`
+	Client    *ssh.Client
+	Sftp      *sftp.Client
+	StdinPipe io.WriteCloser
+	Session   *ssh.Session
 }
 
-type wsBufferWriter struct {
-	buffer bytes.Buffer
-	mu     sync.Mutex
+type wsOutput struct {
+	ws *websocket.Conn
 }
 
 // Write: implement Write interface to write bytes from ssh server into bytes.Buffer.
-func (w *wsBufferWriter) Write(p []byte) (int, error) {
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	return w.buffer.Write(p)
+func (w *wsOutput) Write(p []byte) (int, error) {
+	// 处理非utf8字符
+	if !utf8.Valid(p) {
+		bufStr := string(p)
+		buf := make([]rune, 0, len(bufStr))
+		for _, r := range bufStr {
+			if r == utf8.RuneError {
+				buf = append(buf, []rune("@")...)
+			} else {
+				buf = append(buf, r)
+			}
+		}
+		bufStr = string(buf)
+		p = []byte(string(buf))
+	}
+	err := w.ws.WriteMessage(websocket.TextMessage, p)
+	return len(p), err
 }
 
 // NewSSHClient 返回默认ssh信息
