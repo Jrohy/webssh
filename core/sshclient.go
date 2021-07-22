@@ -125,75 +125,30 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration) {
 		}
 	}()
 
-	//第二个协程将远程主机的返回结果返回给用户
-	go func() {
-		defer func() {
-			ws.Close()
-			if sclient.Session != nil {
-				sclient.StdinPipe.Close()
-				sclient.Session.Close()
-				sclient.Client.Close()
-				sclient.Session = nil
-				sclient.Client = nil
-			}
-			if err := recover(); err != nil {
-				log.Println(err)
-			}
-		}()
-		// 设置ws超时时间timer
-		stopTimer := time.NewTimer(timeout)
-		defer stopTimer.Stop()
-
-		// 主循环
-		for {
-			select {
-			case <-stopCh:
-				return
-			case <-stopTimer.C:
-				ws.WriteMessage(1, []byte("\033[33m已超时关闭连接!\033[0m"))
-				return
-			}
-		}
-	}()
-
 	defer func() {
+		ws.Close()
+		if sclient.Session != nil {
+			sclient.StdinPipe.Close()
+			sclient.Session.Close()
+			sclient.Client.Close()
+			sclient.Session = nil
+			sclient.Client = nil
+		}
 		if err := recover(); err != nil {
 			log.Println(err)
 		}
 	}()
-}
-
-// ExecRemoteCommand 执行远程命令
-func (sclient *SSHClient) ExecRemoteCommand(command string) (string, error) {
-	//创建ssh登陆配置
-	config := &ssh.ClientConfig{
-		Timeout:         time.Second, //ssh 连接time out 时间一秒钟, 如果ssh验证错误 会在一秒内返回
-		User:            sclient.Username,
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(), //这个可以， 但是不够安全
+	// 设置ws超时时间timer
+	stopTimer := time.NewTimer(timeout)
+	defer stopTimer.Stop()
+	// 主循环
+	for {
+		select {
+		case <-stopCh:
+			return
+		case <-stopTimer.C:
+			ws.WriteMessage(1, []byte("\033[33m已超时关闭连接!\033[0m"))
+			return
+		}
 	}
-	config.Auth = []ssh.AuthMethod{ssh.Password(sclient.Password)}
-
-	//dial 获取ssh client
-	addr := fmt.Sprintf("%s:%d", sclient.IPAddress, sclient.Port)
-	sshClient, err := ssh.Dial("tcp", addr, config)
-	if err != nil {
-		fmt.Println("创建ssh client 失败: ", err)
-		return "", err
-	}
-	defer sshClient.Close()
-
-	//创建ssh-session
-	session, err := sshClient.NewSession()
-	if err != nil {
-		fmt.Println("创建ssh session 失败: ", err)
-		return "", err
-	}
-	defer session.Close()
-	//执行远程命令
-	combo, err := session.CombinedOutput(command)
-	if err != nil {
-		fmt.Println("远程执行cmd 失败: ", err)
-		return "", err
-	}
-	return string(combo), nil
 }
