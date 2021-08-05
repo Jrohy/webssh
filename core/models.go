@@ -14,6 +14,7 @@ type SSHClient struct {
 	Password  string `json:"password"`
 	IPAddress string `json:"ipaddress"`
 	Port      int    `json:"port"`
+	LoginType int    `json:"logintype"`
 	Client    *ssh.Client
 	Sftp      *sftp.Client
 	StdinPipe io.WriteCloser

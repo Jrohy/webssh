@@ -41,7 +41,15 @@ func (sclient *SSHClient) GenerateClient() error {
 		err          error
 	)
 	auth = make([]ssh.AuthMethod, 0)
-	auth = append(auth, ssh.Password(sclient.Password))
+	if sclient.LoginType == 0 {
+		auth = append(auth, ssh.Password(sclient.Password))
+	} else {
+		if signer, err := ssh.ParsePrivateKey([]byte(sclient.Password)); err != nil {
+			return err
+		} else {
+			auth = append(auth, ssh.PublicKeys(signer))
+		}
+	}
 	config = ssh.Config{
 		Ciphers: []string{"aes128-ctr", "aes192-ctr", "aes256-ctr", "aes128-gcm@openssh.com", "arcfour256", "arcfour128", "aes128-cbc", "3des-cbc", "aes192-cbc", "aes256-cbc"},
 	}
