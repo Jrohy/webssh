@@ -77,7 +77,17 @@ export default {
                     { required: true, trigger: 'blur' }
                 ],
                 password: [
-                    { required: true, trigger: 'change', message: '不能为空' }
+                    {
+                        required: true,
+                        trigger: 'blur',
+                        validator: (rule, value, callback) => {
+                            if (this.privateKey) {
+                                callback(new Error('privateKey is required'))
+                            } else {
+                                callback(new Error('password is required'))
+                            }
+                        }
+                    }
                 ]
             }
         }
