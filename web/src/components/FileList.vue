@@ -132,6 +132,9 @@ export default {
         },
         async getFileList() {
             this.currentPath = this.currentPath.replace(/\/+/g, '/')
+            if (this.currentPath === '') {
+                this.currentPath = '/'
+            }
             const result = await fileList(this.currentPath, this.$store.getters.sshReq)
             if (result.Msg === 'success') {
                 if (result.Data.list === null) {

@@ -11,9 +11,24 @@
                 <el-form-item label="Username" size="small" prop="username">
                     <el-input v-model="sshInfo.username" placeholder="请输入用户名" @keyup.enter.native="$emit('ssh-select')" style="width: 110px"></el-input>
                 </el-form-item>
-                <el-form-item label="Password" size="small" prop="password">
-                    <el-input v-model="sshInfo.password" @keyup.enter.native="$emit('ssh-select')" placeholder="请输入密码" show-password></el-input>
+                <el-form-item size="small" prop="password">
+                    <template slot="label">
+                        <el-tooltip effect="dark" placement="left">
+                            <div slot="content">
+                                <p>{{ `点击切换为${this.privateKey ? 'Password' : 'PrivateKey'}登录` }}</p>
+                            </div>
+                            <span @click="sshInfo.logintype === 0 ? sshInfo.logintype=1: sshInfo.logintype=0">{{ privateKey?'Privatekey':'Password' }}</span>
+                        </el-tooltip>
+                    </template>
+                    <el-input v-model="sshInfo.password" @click.native="textareaVisible=privateKey" @keyup.enter.native="$emit('ssh-select')" :placeholder="`请输入${this.privateKey ? '密钥' : '密码'}`" show-password></el-input>
                 </el-form-item>
+                <el-dialog title="PrivateKey" :visible.sync="textareaVisible" :close-on-click-modal="false">
+                    <el-input :rows="8" v-model="sshInfo.password" type="textarea" placeholder="请粘贴私钥内容"></el-input>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="sshInfo.password=''">清空</el-button>
+                        <el-button type="primary" @click="textareaVisible = false; $emit('ssh-select')">连接</el-button>
+                    </div>
+                </el-dialog>
                 <el-form-item  size="small">
                     <el-button type="primary" @click="$emit('ssh-select')" plain>连接</el-button>
                 </el-form-item>
@@ -50,6 +65,7 @@ export default {
     },
     data() {
         return {
+            textareaVisible: false,
             checkRules: {
                 host: [
                     { required: true, trigger: 'blur' }
@@ -61,7 +77,7 @@ export default {
                     { required: true, trigger: 'blur' }
                 ],
                 password: [
-                    { required: true, trigger: 'blur' }
+                    { required: true, trigger: 'change', message: '不能为空' }
                 ]
             }
         }
@@ -94,6 +110,9 @@ export default {
     },
     computed: {
         ...mapState(['sshInfo']),
+        privateKey() {
+            return this.sshInfo.logintype === 1
+        },
         sshList() {
             const sshList = this.$store.state.sshList
             if (sshList === null) {

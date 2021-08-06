@@ -13,6 +13,7 @@ export default {
         state.sshInfo.host = ssh.host
         state.sshInfo.username = ssh.username
         state.sshInfo.port = ssh.port
+        state.sshInfo.logintype = ssh.logintype
         if (ssh.password !== undefined) {
             state.sshInfo.password = ssh.password
         }

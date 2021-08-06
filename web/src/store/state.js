@@ -3,7 +3,8 @@ export default {
         host: '',
         username: 'root',
         port: 22,
-        password: ''
+        password: '',
+        logintype: 0
     },
     sshList: Object.prototype.hasOwnProperty.call(localStorage, 'sshList') ? localStorage.getItem('sshList') : null,
     termList: [],

@@ -147,9 +147,9 @@ export default {
             let sshList = this.$store.state.sshList
             if (sshList === null) {
                 if (this.savePass) {
-                    sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}, "password":"${sshInfo.password}"}]`
+                    sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}, "logintype":${sshInfo.logintype}, "password":"${sshInfo.password}"}]`
                 } else {
-                    sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port}}]`
+                    sshList = `[{"host": "${sshInfo.host}", "username": "${sshInfo.username}", "port":${sshInfo.port},  "logintype":${sshInfo.logintype}}]`
                 }
             } else {
                 const sshListObj = JSON.parse(window.atob(sshList))
@@ -161,7 +161,8 @@ export default {
                 sshListObj.push({
                     host: sshInfo.host,
                     username: sshInfo.username,
-                    port: sshInfo.port
+                    port: sshInfo.port,
+                    logintype: sshInfo.logintype
                 })
                 if (this.savePass) {
                     sshListObj[sshListObj.length - 1].password = sshInfo.password
