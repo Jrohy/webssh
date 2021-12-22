@@ -8,17 +8,20 @@ import (
 	"unicode/utf8"
 )
 
-// SSHClient 结构体
-type SSHClient struct {
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	IPAddress string `json:"ipaddress"`
-	Port      int    `json:"port"`
-	LoginType int    `json:"logintype"`
-	Client    *ssh.Client
-	Sftp      *sftp.Client
-	StdinPipe io.WriteCloser
-	Session   *ssh.Session
+// WcList 全局counter list变量
+var WcList []*WriteCounter
+
+// WriteCounter 结构体
+type WriteCounter struct {
+	Total int64
+	Id    string
+}
+
+// Write: implement Write interface to write bytes from ssh server into bytes.Buffer.
+func (wc *WriteCounter) Write(p []byte) (int, error) {
+	n := len(p)
+	wc.Total += int64(n)
+	return n, nil
 }
 
 type wsOutput struct {
@@ -42,6 +45,19 @@ func (w *wsOutput) Write(p []byte) (int, error) {
 	}
 	err := w.ws.WriteMessage(websocket.TextMessage, p)
 	return len(p), err
+}
+
+// SSHClient 结构体
+type SSHClient struct {
+	Username  string `json:"username"`
+	Password  string `json:"password"`
+	IPAddress string `json:"ipaddress"`
+	Port      int    `json:"port"`
+	LoginType int    `json:"logintype"`
+	Client    *ssh.Client
+	Sftp      *sftp.Client
+	StdinPipe io.WriteCloser
+	Session   *ssh.Session
 }
 
 // NewSSHClient 返回默认ssh信息

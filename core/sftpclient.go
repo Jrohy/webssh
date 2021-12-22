@@ -27,13 +27,24 @@ func (sclient *SSHClient) Download(srcPath string) (*sftp.File, error) {
 }
 
 // Upload 上传文件
-func (sclient *SSHClient) Upload(file multipart.File, dstPath string) error {
+func (sclient *SSHClient) Upload(file multipart.File, id, dstPath string) error {
 	dstFile, err := sclient.Sftp.Create(dstPath)
 	if err != nil {
 		return err
 	}
 	defer dstFile.Close()
-	_, err = io.Copy(dstFile, file)
+	defer func() {
+		// 上传完后删掉slice里面的数据
+		for i := 0; i < len(WcList); i++ {
+			if WcList[i].Id == id {
+				WcList = append(WcList[:i], WcList[i+1:]...)
+				break
+			}
+		}
+	}()
+	wc := WriteCounter{Id: id}
+	WcList = append(WcList, &wc)
+	_, err = io.Copy(dstFile, io.TeeReader(file, &wc))
 	if err != nil {
 		return err
 	}

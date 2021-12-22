@@ -102,6 +102,7 @@ func UploadFile(c *gin.Context) *ResponseBody {
 	defer TimeCost(time.Now(), &responseBody)
 	path := strings.TrimSpace(c.DefaultPostForm("path", "/root"))
 	sshInfo := c.PostForm("sshInfo")
+	id := c.PostForm("id")
 	if sshClient, err = core.DecodedMsgToSSHClient(sshInfo); err != nil {
 		fmt.Println(err)
 		responseBody.Msg = err.Error()
@@ -125,7 +126,7 @@ func UploadFile(c *gin.Context) *ResponseBody {
 	} else {
 		path = path + "/" + filename
 	}
-	err = sshClient.Upload(file, path)
+	err = sshClient.Upload(file, id, path)
 	if err != nil {
 		fmt.Println(err)
 		responseBody.Msg = err.Error()
@@ -163,6 +164,44 @@ func DownloadFile(c *gin.Context) *ResponseBody {
 		fileMeta := strings.Split(path, "/")
 		c.Header("Content-Disposition", "attachment; filename="+fileMeta[len(fileMeta)-1])
 		_, _ = io.Copy(c.Writer, sftpFile)
+	}
+	return &responseBody
+}
+
+// UploadProgressWs 获取上传进度ws
+func UploadProgressWs(c *gin.Context) *ResponseBody {
+	responseBody := ResponseBody{Msg: "success"}
+	defer TimeCost(time.Now(), &responseBody)
+	wsConn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		fmt.Println(err)
+		responseBody.Msg = err.Error()
+		return &responseBody
+	}
+	id := c.Query("id")
+
+	var ready bool
+	for {
+		var item *core.WriteCounter
+		for _, v := range core.WcList {
+			if v.Id == id {
+				item = v
+				if !ready {
+					ready = true
+				}
+				break
+			}
+		}
+		if item != nil {
+			wsConn.WriteMessage(1, []byte(strconv.FormatInt(item.Total, 10)))
+		} else if ready {
+			wsConn.Close()
+			break
+		}
+
+		if ready {
+			time.Sleep(300 * time.Millisecond)
+		}
 	}
 	return &responseBody
 }
