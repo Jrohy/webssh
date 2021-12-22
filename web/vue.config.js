@@ -13,14 +13,6 @@ module.exports = {
     // 是否为生产环境构建生成 source map？
     productionSourceMap: false,
 
-    // 调整内部的 webpack 配置。
-    // 查阅 https://github.com/vuejs/vue-docs-zh-cn/blob/master/vue-cli/webpack.md
-    chainWebpack: config => {
-        // 移除 prefetch 插件,解决组件懒加载失效的问题
-        config.plugins.delete('prefetch')
-    },
-
-    // 在生产环境下为 Babel 和 TypeScript 使用 `thread-loader`
     // 在多核机器下会默认开启。
     parallel: require('os').cpus().length > 1,
 
@@ -52,13 +44,6 @@ module.exports = {
                     '^/ws': ''
                 }
             }
-        }
-    },
-    configureWebpack: config => {
-        if (process.env.NODE_ENV === 'production') {
-            // 为生产环境修改配置...
-            config.optimization.splitChunks.maxSize = 500000
-            config.optimization.splitChunks.minSize = 300000
         }
     }
 }
