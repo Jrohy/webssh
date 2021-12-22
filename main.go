@@ -85,6 +85,7 @@ func staticRouter(router *gin.Engine) {
 
 func main() {
 	server := gin.Default()
+	server.SetTrustedProxies(nil)
 	server.Use(gzip.Gzip(gzip.DefaultCompression))
 	staticRouter(server)
 	server.GET("/term", func(c *gin.Context) {

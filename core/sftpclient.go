@@ -35,10 +35,14 @@ func (sclient *SSHClient) Upload(file multipart.File, id, dstPath string) error 
 	defer dstFile.Close()
 	defer func() {
 		// 上传完后删掉slice里面的数据
-		for i := 0; i < len(WcList); i++ {
-			if WcList[i].Id == id {
-				WcList = append(WcList[:i], WcList[i+1:]...)
-				break
+		if len(WcList) < 2 {
+			WcList = WcList[0:0]
+		} else {
+			for i := 0; i < len(WcList); i++ {
+				if WcList[i].Id == id {
+					WcList = append(WcList[:i], WcList[i+1:]...)
+					break
+				}
 			}
 		}
 	}()
