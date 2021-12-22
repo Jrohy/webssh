@@ -43,7 +43,7 @@ export default {
             this.term = new Terminal()
             this.term.loadAddon(fitAddon)
             this.term.open(document.getElementById(this.id))
-            try { fitAddon.fit() } catch (e) {}
+            fitAddon.fit()
             const self = this
             const heartCheck = {
                 timeout: 5000, // 5s发一次心跳
@@ -61,12 +61,12 @@ export default {
             }
             // open websocket
             this.ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${prefix}/term?sshInfo=${sshReq}&rows=${this.term.rows}&cols=${this.term.cols}`)
-            this.ws.onopen = e => {
+            this.ws.onopen = () => {
                 console.log(Date(), 'onopen')
                 self.connected()
                 heartCheck.start()
             }
-            this.ws.onclose = e => {
+            this.ws.onclose = () => {
                 console.log(Date(), 'onclose')
                 if (!self.resetClose) {
                     if (!this.savePass) {
@@ -84,7 +84,7 @@ export default {
                 heartCheck.stop()
                 self.resetClose = false
             }
-            this.ws.onerror = e => {
+            this.ws.onerror = () => {
                 console.log(Date(), 'onerror')
             }
             const attachAddon = new AttachAddon(this.ws)
@@ -118,7 +118,7 @@ export default {
                     } else {
                         self.term.setOption('fontSize', --this.fontSize)
                     }
-                    try { fitAddon.fit() } catch (e) {}
+                    fitAddon.fit()
                     if (self.ws !== null && self.ws.readyState === 1) {
                         self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
                     }
@@ -126,7 +126,7 @@ export default {
             })
             window.addEventListener('resize', () => {
                 termWeb.style.height = (document.body.clientHeight - 102) + 'px'
-                try { fitAddon.fit() } catch (e) {}
+                fitAddon.fit()
                 if (self.ws !== null && self.ws.readyState === 1) {
                     self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
                 }
