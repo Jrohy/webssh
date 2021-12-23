@@ -14,12 +14,11 @@
                             <el-button type="primary" size="mini" icon="el-icon-upload" @click="openUploadDialog()"></el-button>
                         </el-button-group>
                         <el-dialog title="文件上传" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
-                            <el-upload class="upload-demo" drag :action="uploadUrl" :before-upload="beforeUpload" :http-request="uploadRequest">
+                            <el-upload class="upload-demo" drag :action="uploadUrl" :data="uploadData" :before-upload="beforeUpload" :on-progress="uploadProgress" :on-success="uploadSuccess">
                                 <i class="el-icon-upload"></i>
                                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                                 <div class="el-upload__tip" slot="tip">{{ this.uploadTip }}</div>
                             </el-upload>
-                            <el-progress :percentage="progressPercent"></el-progress>
                         </el-dialog>
                     </el-button-group>
                 </el-col>
@@ -44,7 +43,6 @@
 <script>
 import { fileList } from '@/api/file'
 import { mapState } from 'vuex'
-import axios from 'axios'
 
 export default {
     name: 'FileList',
@@ -53,6 +51,7 @@ export default {
             uploadVisible: false,
             dialogVisible: false,
             fileList: [],
+            fileId: '',
             downloadFilePath: '',
             currentPath: '',
             clientHeight: 0,
@@ -60,7 +59,8 @@ export default {
             dialogWidth: '50%',
             uploadWidth: '32%',
             nameWidth: 260,
-            progressPercent: 0
+            progressPercent: 0,
+            ws: null
         }
     },
     created() {
@@ -77,6 +77,13 @@ export default {
         ...mapState(['currentTab']),
         uploadUrl: () => {
             return `${process.env.NODE_ENV === 'production' ? `${location.origin}` : 'api'}/file/upload`
+        },
+        uploadData: function() {
+            return {
+                sshInfo: this.$store.getters.sshReq,
+                path: this.currentPath,
+                id: this.createId()
+            }
         }
     },
     watch: {
@@ -86,11 +93,12 @@ export default {
         }
     },
     methods: {
-        guid() {
+        createId() {
             function S4() {
                 return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
             }
-            return (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4())
+            this.fileId = (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4())
+            return this.fileId
         },
         setDialogWidth() {
             const clientWith = document.body.clientWidth
@@ -116,36 +124,27 @@ export default {
             this.uploadTip = `正在上传${file.name} 到 ${this.currentPath}, 请勿关闭窗口..`
             return true
         },
-        uploadRequest(data) {
-            const id = this.guid()
-            const formData = new FormData()
-            formData.append('file', data.file)
-            formData.append('sshInfo', this.$store.getters.sshReq)
-            formData.append('path', this.currentPath)
-            formData.append('id', id)
-            const config = {
-                onUploadProgress: progressEvent => {
-                    if (progressEvent.loaded === progressEvent.total) {
-                        const ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${process.env.NODE_ENV === 'production' ? '' : '/ws'}/file/progress?id=${id}`)
-                        ws.onmessage = e => {
-                            this.progressPercent = Number(((progressEvent.loaded + Number(e.data)) / (progressEvent.total * 2) * 100).toFixed(1))
-                        }
-                        ws.onclose = () => {
-                            console.log(Date(), 'onclose')
-                            this.progressPercent = 100
-                        }
-                        ws.onerror = () => {
-                            console.log(Date(), 'onerror')
-                        }
+        uploadSuccess(r, file) {
+            this.uploadTip = `${file.name}上传完成!`
+        },
+        uploadProgress(e, f) {
+            e.percent = e.percent / 2
+            f.percentage = f.percentage / 2
+            if (e.percent > 45) {
+                if (this.ws === null) {
+                    this.ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${process.env.NODE_ENV === 'production' ? '' : '/ws'}/file/progress?id=${this.fileId}`)
+                    this.ws.onmessage = e1 => {
+                        f.percentage = (f.size + Number(e1.data)) / (f.size * 2) * 100
                     }
-                    this.progressPercent = Number(((progressEvent.loaded) / (progressEvent.total * 2) * 100).toFixed(1))
+                    this.ws.onclose = () => {
+                        console.log(Date(), 'onclose')
+                        this.ws = null
+                    }
+                    this.ws.onerror = () => {
+                        console.log(Date(), 'onerror')
+                    }
                 }
             }
-            axios.post(this.uploadUrl, formData, config).then(res => {
-                if (res.data.Msg === 'success') {
-                    this.uploadTip = `${data.file.name}上传完成!`
-                }
-            })
         },
         nameSort(a, b) {
             return a.Name > b.Name
