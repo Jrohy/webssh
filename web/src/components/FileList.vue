@@ -81,8 +81,7 @@ export default {
         uploadData: function() {
             return {
                 sshInfo: this.$store.getters.sshReq,
-                path: this.currentPath,
-                id: this.createId()
+                path: this.currentPath
             }
         }
     },
@@ -93,12 +92,11 @@ export default {
         }
     },
     methods: {
-        createId() {
+        genUUID() {
             function S4() {
                 return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
             }
-            this.fileId = (S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4())
-            return this.fileId
+            return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4()
         },
         setDialogWidth() {
             const clientWith = document.body.clientWidth
@@ -122,6 +120,8 @@ export default {
         },
         beforeUpload(file) {
             this.uploadTip = `正在上传${file.name} 到 ${this.currentPath}, 请勿关闭窗口..`
+            this.fileId = this.genUUID()
+            this.uploadData.id = this.fileId
             return true
         },
         uploadSuccess(r, file) {
@@ -130,19 +130,16 @@ export default {
         uploadProgress(e, f) {
             e.percent = e.percent / 2
             f.percentage = f.percentage / 2
-            if (e.percent > 45) {
-                if (this.ws === null) {
-                    this.ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${process.env.NODE_ENV === 'production' ? '' : '/ws'}/file/progress?id=${this.fileId}`)
-                    this.ws.onmessage = e1 => {
-                        f.percentage = (f.size + Number(e1.data)) / (f.size * 2) * 100
-                    }
-                    this.ws.onclose = () => {
-                        console.log(Date(), 'onclose')
-                        this.ws = null
-                    }
-                    this.ws.onerror = () => {
-                        console.log(Date(), 'onerror')
-                    }
+            if (e.percent === 50) {
+                const ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${process.env.NODE_ENV === 'production' ? '' : '/ws'}/file/progress?id=${this.fileId}`)
+                ws.onmessage = e1 => {
+                    f.percentage = (f.size + Number(e1.data)) / (f.size * 2) * 100
+                }
+                ws.onclose = () => {
+                    console.log(Date(), 'onclose')
+                }
+                ws.onerror = () => {
+                    console.log(Date(), 'onerror')
                 }
             }
         },
