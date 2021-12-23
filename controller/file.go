@@ -180,27 +180,29 @@ func UploadProgressWs(c *gin.Context) *ResponseBody {
 	}
 	id := c.Query("id")
 
-	var ready bool
+	var ready, find bool
 	for {
-		var item *core.WriteCounter
+		if !ready && core.WcList == nil {
+			continue
+		}
 		for _, v := range core.WcList {
 			if v.Id == id {
-				item = v
+				wsConn.WriteMessage(1, []byte(strconv.FormatInt(v.Total, 10)))
+				find = true
 				if !ready {
 					ready = true
 				}
 				break
 			}
 		}
-		if item != nil {
-			wsConn.WriteMessage(1, []byte(strconv.FormatInt(item.Total, 10)))
-		} else if ready {
+		if ready && !find {
 			wsConn.Close()
 			break
 		}
 
 		if ready {
 			time.Sleep(300 * time.Millisecond)
+			find = false
 		}
 	}
 	return &responseBody
