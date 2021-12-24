@@ -14,7 +14,7 @@
                             <el-button type="primary" size="mini" icon="el-icon-upload" @click="openUploadDialog()"></el-button>
                         </el-button-group>
                         <el-dialog title="文件上传" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
-                            <el-upload class="upload-demo" drag :action="uploadUrl" :data="uploadData" :before-upload="beforeUpload" :on-progress="uploadProgress" :on-success="uploadSuccess">
+                            <el-upload class="upload-demo" multiple drag :action="uploadUrl" :data="uploadData" :before-upload="beforeUpload" :on-progress="uploadProgress" :on-success="uploadSuccess">
                                 <i class="el-icon-upload"></i>
                                 <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
                                 <div class="el-upload__tip" slot="tip">{{ this.uploadTip }}</div>
@@ -51,7 +51,6 @@ export default {
             uploadVisible: false,
             dialogVisible: false,
             fileList: [],
-            fileId: '',
             downloadFilePath: '',
             currentPath: '',
             clientHeight: 0,
@@ -59,8 +58,7 @@ export default {
             dialogWidth: '50%',
             uploadWidth: '32%',
             nameWidth: 260,
-            progressPercent: 0,
-            ws: null
+            progressPercent: 0
         }
     },
     created() {
@@ -92,12 +90,6 @@ export default {
         }
     },
     methods: {
-        genUUID() {
-            function S4() {
-                return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
-            }
-            return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4()
-        },
         setDialogWidth() {
             const clientWith = document.body.clientWidth
             if (clientWith < 600) {
@@ -120,8 +112,7 @@ export default {
         },
         beforeUpload(file) {
             this.uploadTip = `正在上传${file.name} 到 ${this.currentPath}, 请勿关闭窗口..`
-            this.fileId = this.genUUID()
-            this.uploadData.id = this.fileId
+            this.uploadData.id = file.uid
             return true
         },
         uploadSuccess(r, file) {
@@ -131,7 +122,7 @@ export default {
             e.percent = e.percent / 2
             f.percentage = f.percentage / 2
             if (e.percent === 50) {
-                const ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${process.env.NODE_ENV === 'production' ? '' : '/ws'}/file/progress?id=${this.fileId}`)
+                const ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${process.env.NODE_ENV === 'production' ? '' : '/ws'}/file/progress?id=${f.uid}`)
                 ws.onmessage = e1 => {
                     f.percentage = (f.size + Number(e1.data)) / (f.size * 2) * 100
                 }
