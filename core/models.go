@@ -13,14 +13,14 @@ var WcList []*WriteCounter
 
 // WriteCounter 结构体
 type WriteCounter struct {
-	Total int64
+	Total int
 	Id    string
 }
 
 // Write: implement Write interface to write bytes from ssh server into bytes.Buffer.
 func (wc *WriteCounter) Write(p []byte) (int, error) {
 	n := len(p)
-	wc.Total += int64(n)
+	wc.Total += n
 	return n, nil
 }
 
