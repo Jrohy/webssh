@@ -41,18 +41,21 @@ GOOS=windows GOARCH=386 go build -ldflags "$LDFLAGS" -o result/webssh_windows_38
 GOOS=linux GOARCH=amd64 go build -ldflags "$LDFLAGS" -o result/webssh_linux_amd64 .
 GOOS=linux GOARCH=arm64 go build -ldflags "$LDFLAGS" -o result/webssh_linux_arm64 .
 GOOS=darwin GOARCH=amd64 go build -ldflags "$LDFLAGS" -o result/webssh_darwin_amd64 .
+GOOS=darwin GOARCH=arm64 go build -ldflags "$LDFLAGS" -o result/webssh_darwin_arm64 .
 
-cd result
+if [[ $# == 0 ]];then
+    cd result
 
-UPLOAD_ITEM=($(ls -l|awk '{print $9}'|xargs -r))
+    UPLOAD_ITEM=($(ls -l|awk '{print $9}'|xargs -r))
 
-for ITEM in ${UPLOAD_ITEM[@]}
-do
-   upload $ITEM
-done
+    for ITEM in ${UPLOAD_ITEM[@]}
+    do
+        upload $ITEM
+    done
 
-echo "upload completed!"
+    echo "upload completed!"
 
-cd $SHELL_PATH
+    cd $SHELL_PATH
 
-rm -rf result
+    rm -rf result
+fi
