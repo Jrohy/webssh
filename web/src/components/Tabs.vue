@@ -1,11 +1,12 @@
 <template>
     <div>
-        <el-tabs v-model="currentTerm" type="card" closable @tab-remove="removeTab" @tab-click="clickTab">
+        <el-tabs v-model="currentTerm" type="card" @tab-remove="removeTab" @tab-click="clickTab">
             <el-tab-pane
                 v-for="(item, index) in termList"
                 :key="item.name"
                 :label="item.label"
                 :name="item.name"
+                :closable="item.closable"
             >
                 <terminal :id="'Terminal' + index" :ref="item.name"></terminal>
             </el-tab-pane>
@@ -14,6 +15,7 @@
             <ul :style="{left:left+'px',top:top+'px'}" class="contextmenu">
                 <!--重命名-->
                 <li @click="rename"><el-button type="text" size="mini">{{$t('Rename')}}</el-button></li>
+                <li @click="lockSession"><el-button type="text" size="mini">{{$t('LockSession')}}</el-button></li>
                 <el-divider></el-divider>
                 <li @click="copyTab()"><el-button type="text" size="mini">{{$t('Copy')}}</el-button></li>
                 <li @click="setScreenfull()"><el-button type="text" size="mini">{{ $t('ScreenFull') }}</el-button></li>
@@ -168,7 +170,8 @@ export default {
             this.termList.push({
                 name: `${sshInfo.host}-${this.genID(5)}`,
                 label: sshInfo.host,
-                path: '/'
+                path: '/',
+                closable: true
             })
             const tab = this.termList[this.termList.length - 1]
             this.currentTerm = tab.name
@@ -230,6 +233,14 @@ export default {
                 }
             }
         },
+        // 简单时间锁会话
+        lockSession() {
+            for (let tab of this.termList) {
+                if (tab.name === this.menuTab) {
+                    tab.closable = !tab.closable
+                }
+            }
+        }
     }
 }
 </script>

@@ -28,5 +28,6 @@
   "Reconnect": "Reconnect",
   "OK": "OK",
   "Cancel": "Cancel",
+  "LockSession": "Un/Lock",
   "Empty": "Empty"
 }
