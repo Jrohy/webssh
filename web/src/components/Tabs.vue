@@ -12,6 +12,9 @@
         </el-tabs>
         <div v-show="contextMenuVisible">
             <ul :style="{left:left+'px',top:top+'px'}" class="contextmenu">
+                <!--重命名-->
+                <li @click="rename"><el-button type="text" size="mini">{{$t('Rename')}}</el-button></li>
+                <el-divider></el-divider>
                 <li @click="copyTab()"><el-button type="text" size="mini">{{$t('Copy')}}</el-button></li>
                 <li @click="setScreenfull()"><el-button type="text" size="mini">{{ $t('ScreenFull') }}</el-button></li>
                 <li @click="removeTab(menuTab)"><el-button type="text" size="mini">{{$t('Close')}}</el-button></li>
@@ -29,6 +32,7 @@
 import Sortable from 'sortablejs'
 import screenfull from 'screenfull'
 import Terminal from '@/components/Terminal'
+import {MessageBox} from 'element-ui'
 
 export default {
     name: 'Tabs',
@@ -202,7 +206,30 @@ export default {
             }
             this.termList = tabs.filter(tab => tab.name !== targetName)
             this.findTerm()
-        }
+        },
+        // 重命名连接
+        async rename() {
+            for (const tab of this.termList) {
+                if (tab.name === this.menuTab) {
+                    let {value} = await MessageBox.confirm('', this.$t('Rename'), {
+                        showInput: true,
+                        inputType: 'text',
+                        confirmButtonText: this.$t('OK'),
+                        cancelButtonText: this.$t('Cancel'),
+                        inputValue: tab.label,
+                        inputValidator: function (label) {
+                            return label !== null && label.length > 0
+                        }
+                    }).catch(null)
+                    tab.label = value
+                    // 如果是当前连接
+                    if (this.currentTerm === this.menuTab) {
+                        document.title = tab.label
+                    }
+                    break
+                }
+            }
+        },
     }
 }
 </script>

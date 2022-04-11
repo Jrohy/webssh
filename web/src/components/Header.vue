@@ -86,7 +86,7 @@ export default {
                     { required: true, trigger: 'blur' }
                 ],
                 password: [
-                    { required: true, trigger: 'blur', message: 'value is required' }
+                    { required: true, trigger: 'blur', message: this.$t('MsgRequired') }
                 ]
             }
         }
