@@ -1,7 +1,7 @@
 <template>
     <div class="MainContainer">
-        <el-button type="primary" size="small" @click="getFileList(); dialogVisible = true">文件管理</el-button>
-        <el-dialog :title="'文件管理(' + this.$store.state.sshInfo.host + ')'" :visible.sync="dialogVisible" top="5vh" :width="dialogWidth">
+        <el-button type="primary" size="small" @click="getFileList(); dialogVisible = true">{{$t('Ftp')}}</el-button>
+        <el-dialog :title="$t('Ftp') + '(' + this.$store.state.sshInfo.host + ')'" :visible.sync="dialogVisible" top="5vh" :width="dialogWidth">
             <el-row>
                 <el-col :span="18">
                     <el-input v-model="currentPath" @keyup.enter.native="getFileList()"></el-input>
@@ -13,10 +13,10 @@
                             <el-button type="primary" size="mini" icon="el-icon-refresh" @click="getFileList()"></el-button>
                             <el-button type="primary" size="mini" icon="el-icon-upload" @click="openUploadDialog()"></el-button>
                         </el-button-group>
-                        <el-dialog title="文件上传" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
+                        <el-dialog :title="$t('Upload')" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
                             <el-upload class="upload-demo" multiple drag :action="uploadUrl" :data="uploadData" :before-upload="beforeUpload" :on-progress="uploadProgress" :on-success="uploadSuccess">
                                 <i class="el-icon-upload"></i>
-                                <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                                <div class="el-upload__text">{{$t('UploadTips')}}</div>
                                 <div class="el-upload__tip" slot="tip">{{ this.uploadTip }}</div>
                             </el-upload>
                         </el-dialog>
@@ -25,7 +25,7 @@
             </el-row>
             <el-table :data="fileList" :height="clientHeight" @row-dblclick="rowClick">
                 <el-table-column
-                    label="名字"
+                    :label="$t('Name')"
                     :width="nameWidth"
                     sortable :sort-method="nameSort">
                     <template slot-scope="scope">
@@ -33,8 +33,8 @@
                         <p v-else-if="scope.row.IsDir === false" class="el-icon-document"> {{ scope.row.Name }}</p>
                     </template>
                 </el-table-column>
-                <el-table-column label="大小" prop="Size"></el-table-column>
-                <el-table-column label="修改时间" prop="ModifyTime" sortable></el-table-column>
+                <el-table-column :label="$t('Size')" prop="Size"></el-table-column>
+                <el-table-column :label="$t('ModifiedTime')" prop="ModifyTime" sortable></el-table-column>
             </el-table>
         </el-dialog>
     </div>
@@ -86,7 +86,7 @@ export default {
     watch: {
         currentTab: function() {
             this.fileList = []
-            this.currentPath = this.currentTab.path
+            this.currentPath = this.currentTab && this.currentTab.path
         }
     },
     methods: {

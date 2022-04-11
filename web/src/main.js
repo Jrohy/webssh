@@ -10,6 +10,8 @@ import store from '@/store/index'
 
 import 'xterm/css/xterm.css'
 
+import i18n from './i18n'
+
 Vue.use(element)
 
 Vue.config.productionTip = false
@@ -17,6 +19,7 @@ Vue.config.productionTip = false
 /* eslint-disable no-new */
 new Vue({
     el: '#app',
+    i18n,
     store,
     render: h => h(App)
 })
