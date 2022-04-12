@@ -1,3 +1,5 @@
+import { getLanguage } from '@/lang/index'
+
 export default {
     sshInfo: {
         host: '',
@@ -8,5 +10,6 @@ export default {
     },
     sshList: Object.prototype.hasOwnProperty.call(localStorage, 'sshList') ? localStorage.getItem('sshList') : null,
     termList: [],
-    currentTab: {}
+    currentTab: {},
+    language: getLanguage()
 }

@@ -74,7 +74,7 @@ export default {
                         this.ssh.password = ''
                     }
                     this.$message({
-                        message: 'websocket连接已断开!',
+                        message: this.$t('wsClose'),
                         type: 'warning',
                         duration: 0,
                         showClose: true

@@ -10,7 +10,7 @@ import store from '@/store/index'
 
 import 'xterm/css/xterm.css'
 
-import i18n from './i18n'
+import i18n from './lang/index'
 
 Vue.use(element)
 

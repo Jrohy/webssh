@@ -18,7 +18,7 @@
                 <li @click="lockSession"><el-button type="text" size="mini">{{$t('LockSession')}}</el-button></li>
                 <el-divider></el-divider>
                 <li @click="copyTab()"><el-button type="text" size="mini">{{$t('Copy')}}</el-button></li>
-                <li @click="setScreenfull()"><el-button type="text" size="mini">{{ $t('ScreenFull') }}</el-button></li>
+                <li @click="setScreenfull()"><el-button type="text" size="mini">{{ $t('FullScreen') }}</el-button></li>
                 <li @click="removeTab(menuTab)"><el-button type="text" size="mini">{{$t('Close')}}</el-button></li>
                 <el-divider></el-divider>
                 <li @click="closeTabs('left')"><el-button type="text" size="mini">{{$t('CloseLeft')}}</el-button></li>
@@ -95,7 +95,7 @@ export default {
         setScreenfull() {
             if (!screenfull.isEnabled) {
                 this.$message({
-                    message: '暂不不支持全屏',
+                    message: 'not support fullscreen',
                     type: 'warning'
                 })
                 return false

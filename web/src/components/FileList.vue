@@ -1,7 +1,7 @@
 <template>
     <div class="MainContainer">
-        <el-button type="primary" size="small" @click="getFileList(); dialogVisible = true">{{$t('Ftp')}}</el-button>
-        <el-dialog :title="$t('Ftp') + '(' + this.$store.state.sshInfo.host + ')'" :visible.sync="dialogVisible" top="5vh" :width="dialogWidth">
+        <el-button type="primary" size="small" @click="getFileList(); dialogVisible = true">{{$t('FileBrowser')}}</el-button>
+        <el-dialog :title="$t('FileBrowser') + '(' + this.$store.state.sshInfo.host + ')'" :visible.sync="dialogVisible" top="5vh" :width="dialogWidth">
             <el-row>
                 <el-col :span="18">
                     <el-input v-model="currentPath" @keyup.enter.native="getFileList()"></el-input>
@@ -107,16 +107,16 @@ export default {
             }
         },
         openUploadDialog() {
-            this.uploadTip = `当前上传目录: ${this.currentPath}`
+            this.uploadTip = `${this.$t('uploadPath')}: ${this.currentPath}`
             this.uploadVisible = true
         },
         beforeUpload(file) {
-            this.uploadTip = `正在上传${file.name} 到 ${this.currentPath}, 请勿关闭窗口..`
+            this.uploadTip = `${this.$t('uploading')} ${file.name} ${this.$t('to')} ${this.currentPath}, ${this.notCloseWindows}..`
             this.uploadData.id = file.uid
             return true
         },
         uploadSuccess(r, file) {
-            this.uploadTip = `${file.name}上传完成!`
+            this.uploadTip = `${file.name}${this.$t('uploadFinish')}!`
         },
         uploadProgress(e, f) {
             e.percent = e.percent / 2

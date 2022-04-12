@@ -20,5 +20,9 @@ export default {
     },
     SET_TAB(state, tab) {
         state.currentTab = tab
+    },
+    SET_LANGUAGE: (state, language) => {
+        state.language = language
+        localStorage.setItem('language', language)
     }
 }
