@@ -14,8 +14,8 @@
         <div v-show="contextMenuVisible">
             <ul :style="{left:left+'px',top:top+'px'}" class="contextmenu">
                 <!--重命名-->
-                <li @click="rename"><el-button type="text" size="mini">{{$t('Rename')}}</el-button></li>
-                <li @click="lockSession"><el-button type="text" size="mini">{{$t('LockSession')}}</el-button></li>
+                <li @click="renameTab()"><el-button type="text" size="mini">{{$t('Rename')}}</el-button></li>
+                <li @click="lockSession()"><el-button type="text" size="mini">{{$t('LockSession')}}</el-button></li>
                 <el-divider></el-divider>
                 <li @click="copyTab()"><el-button type="text" size="mini">{{$t('Copy')}}</el-button></li>
                 <li @click="setScreenfull()"><el-button type="text" size="mini">{{ $t('FullScreen') }}</el-button></li>
@@ -210,22 +210,21 @@ export default {
             this.termList = tabs.filter(tab => tab.name !== targetName)
             this.findTerm()
         },
-        // 重命名连接
-        async rename() {
+        async renameTab() {
             for (const tab of this.termList) {
                 if (tab.name === this.menuTab) {
-                    let {value} = await MessageBox.confirm('', this.$t('Rename'), {
+                    let {value} = await MessageBox.prompt('', this.$t('Rename'), {
                         showInput: true,
                         inputType: 'text',
                         confirmButtonText: this.$t('OK'),
                         cancelButtonText: this.$t('Cancel'),
                         inputValue: tab.label,
+                        inputErrorMessage: 'please input value',
                         inputValidator: function (label) {
                             return label !== null && label.length > 0
                         }
                     }).catch(null)
                     tab.label = value
-                    // 如果是当前连接
                     if (this.currentTerm === this.menuTab) {
                         document.title = tab.label
                     }

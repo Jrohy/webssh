@@ -1,4 +1,6 @@
 export default {
+    OK: '确定',
+    Cancel: '取消',
     History: '历史记录',
     Size: '大小',
     Name: '名字',
