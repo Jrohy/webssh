@@ -14,6 +14,7 @@
     "screenfull": "^5.2.0",
     "sortablejs": "^1.14.0",
     "vue": "^2.6.14",
+    "vue-i18n": "8",
     "vuex": "^3.6.2",
     "xterm": "^4.16.0",
     "xterm-addon-attach": "^0.6.0",

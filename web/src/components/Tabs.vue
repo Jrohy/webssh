@@ -1,25 +1,30 @@
 <template>
     <div>
-        <el-tabs v-model="currentTerm" type="card" closable @tab-remove="removeTab" @tab-click="clickTab">
+        <el-tabs v-model="currentTerm" type="card" @tab-remove="removeTab" @tab-click="clickTab">
             <el-tab-pane
                 v-for="(item, index) in termList"
                 :key="item.name"
                 :label="item.label"
                 :name="item.name"
+                :closable="item.closable"
             >
                 <terminal :id="'Terminal' + index" :ref="item.name"></terminal>
             </el-tab-pane>
         </el-tabs>
         <div v-show="contextMenuVisible">
             <ul :style="{left:left+'px',top:top+'px'}" class="contextmenu">
-                <li @click="copyTab()"><el-button type="text" size="mini">复制</el-button></li>
-                <li @click="setScreenfull()"><el-button type="text" size="mini">全屏</el-button></li>
-                <li @click="removeTab(menuTab)"><el-button type="text" size="mini">关闭</el-button></li>
+                <!--重命名-->
+                <li @click="rename"><el-button type="text" size="mini">{{$t('Rename')}}</el-button></li>
+                <li @click="lockSession"><el-button type="text" size="mini">{{$t('LockSession')}}</el-button></li>
                 <el-divider></el-divider>
-                <li @click="closeTabs('left')"><el-button type="text" size="mini">关闭左边</el-button></li>
-                <li @click="closeTabs('right')"><el-button type="text" size="mini">关闭右边</el-button></li>
-                <li @click="closeTabs('other')"><el-button type="text"  size="mini">关闭其他</el-button></li>
-                <li @click="closeTabs('all')"><el-button type="text" size="mini">关闭所有</el-button></li>
+                <li @click="copyTab()"><el-button type="text" size="mini">{{$t('Copy')}}</el-button></li>
+                <li @click="setScreenfull()"><el-button type="text" size="mini">{{ $t('ScreenFull') }}</el-button></li>
+                <li @click="removeTab(menuTab)"><el-button type="text" size="mini">{{$t('Close')}}</el-button></li>
+                <el-divider></el-divider>
+                <li @click="closeTabs('left')"><el-button type="text" size="mini">{{$t('CloseLeft')}}</el-button></li>
+                <li @click="closeTabs('right')"><el-button type="text" size="mini">{{$t('CloseRight')}}</el-button></li>
+                <li @click="closeTabs('other')"><el-button type="text"  size="mini">{{$t('CloseOther')}}</el-button></li>
+                <li @click="closeTabs('all')"><el-button type="text" size="mini">{{$t('CloseAll')}}</el-button></li>
             </ul>
         </div>
     </div>
@@ -29,6 +34,7 @@
 import Sortable from 'sortablejs'
 import screenfull from 'screenfull'
 import Terminal from '@/components/Terminal'
+import {MessageBox} from 'element-ui'
 
 export default {
     name: 'Tabs',
@@ -164,7 +170,8 @@ export default {
             this.termList.push({
                 name: `${sshInfo.host}-${this.genID(5)}`,
                 label: sshInfo.host,
-                path: '/'
+                path: '/',
+                closable: true
             })
             const tab = this.termList[this.termList.length - 1]
             this.currentTerm = tab.name
@@ -202,6 +209,37 @@ export default {
             }
             this.termList = tabs.filter(tab => tab.name !== targetName)
             this.findTerm()
+        },
+        // 重命名连接
+        async rename() {
+            for (const tab of this.termList) {
+                if (tab.name === this.menuTab) {
+                    let {value} = await MessageBox.confirm('', this.$t('Rename'), {
+                        showInput: true,
+                        inputType: 'text',
+                        confirmButtonText: this.$t('OK'),
+                        cancelButtonText: this.$t('Cancel'),
+                        inputValue: tab.label,
+                        inputValidator: function (label) {
+                            return label !== null && label.length > 0
+                        }
+                    }).catch(null)
+                    tab.label = value
+                    // 如果是当前连接
+                    if (this.currentTerm === this.menuTab) {
+                        document.title = tab.label
+                    }
+                    break
+                }
+            }
+        },
+        // 简单时间锁会话
+        lockSession() {
+            for (let tab of this.termList) {
+                if (tab.name === this.menuTab) {
+                    tab.closable = !tab.closable
+                }
+            }
         }
     }
 }
