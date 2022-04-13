@@ -26,6 +26,7 @@ func TermWs(c *gin.Context, timeout time.Duration) *ResponseBody {
 	sshInfo := c.DefaultQuery("sshInfo", "")
 	cols := c.DefaultQuery("cols", "150")
 	rows := c.DefaultQuery("rows", "35")
+	closeTip := c.DefaultQuery("closeTip", "Connection timed out!")
 	col, _ := strconv.Atoi(cols)
 	row, _ := strconv.Atoi(rows)
 	sshClient, err := core.DecodedMsgToSSHClient(sshInfo)
@@ -49,6 +50,6 @@ func TermWs(c *gin.Context, timeout time.Duration) *ResponseBody {
 		return &responseBody
 	}
 	sshClient.InitTerminal(wsConn, row, col)
-	sshClient.Connect(wsConn, timeout)
+	sshClient.Connect(wsConn, timeout, closeTip)
 	return &responseBody
 }

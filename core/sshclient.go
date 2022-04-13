@@ -100,7 +100,7 @@ func (sclient *SSHClient) InitTerminal(ws *websocket.Conn, rows, cols int) *SSHC
 }
 
 // Connect ws连接
-func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration) {
+func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration, closeTip string) {
 	stopCh := make(chan struct{})
 	//这里第一个协程获取用户的输入
 	go func() {
@@ -155,7 +155,7 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration) {
 		case <-stopCh:
 			return
 		case <-stopTimer.C:
-			ws.WriteMessage(1, []byte("\033[33m已超时关闭连接!\033[0m"))
+			ws.WriteMessage(1, []byte(fmt.Sprintf("\u001B[33m%s\u001B[0m", closeTip)))
 			return
 		}
 	}

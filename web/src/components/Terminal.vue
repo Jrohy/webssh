@@ -43,7 +43,7 @@ export default {
             this.term = new Terminal()
             this.term.loadAddon(fitAddon)
             this.term.open(document.getElementById(this.id))
-            fitAddon.fit()
+            try { fitAddon.fit() } catch (e) {/**/}
             const self = this
             const heartCheck = {
                 timeout: 5000, // 5s发一次心跳
@@ -59,8 +59,12 @@ export default {
                     }, this.timeout)
                 }
             }
+            let closeTip = '已超时关闭!'
+            if (this.$store.state.language === 'en') {
+                closeTip = 'Connection timed out!'
+            }
             // open websocket
-            this.ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${prefix}/term?sshInfo=${sshReq}&rows=${this.term.rows}&cols=${this.term.cols}`)
+            this.ws = new WebSocket(`${(location.protocol === 'http:' ? 'ws' : 'wss')}://${location.host}${prefix}/term?sshInfo=${sshReq}&rows=${this.term.rows}&cols=${this.term.cols}&closeTip=${closeTip}`)
             this.ws.onopen = () => {
                 console.log(Date(), 'onopen')
                 self.connected()
@@ -118,7 +122,7 @@ export default {
                     } else {
                         self.term.setOption('fontSize', --this.fontSize)
                     }
-                    fitAddon.fit()
+                    try { fitAddon.fit() } catch (e) {/**/}
                     if (self.ws !== null && self.ws.readyState === 1) {
                         self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
                     }
@@ -186,7 +190,3 @@ export default {
     }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-</style>
