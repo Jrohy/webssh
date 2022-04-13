@@ -2,6 +2,8 @@ export default {
     OK: '确定',
     Cancel: '取消',
     History: '历史记录',
+    Lock: '锁定',
+    Unlock: '解锁',
     Size: '大小',
     Name: '名字',
     Copy: '复制',
@@ -29,5 +31,6 @@ export default {
     uploadFinish: '上传完成',
     to: '到',
     uploading: '正在上传',
-    notCloseWindows: '请勿关闭窗口'
+    notCloseWindows: '请勿关闭窗口',
+    unlockClose: '请解锁后再来关闭'
 }

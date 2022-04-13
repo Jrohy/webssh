@@ -15,7 +15,7 @@
             <ul :style="{left:left+'px',top:top+'px'}" class="contextmenu">
                 <!--重命名-->
                 <li @click="renameTab()"><el-button type="text" size="mini">{{$t('Rename')}}</el-button></li>
-                <li @click="lockSession()"><el-button type="text" size="mini">{{$t('LockSession')}}</el-button></li>
+                <li @click="lockTab()"><el-button type="text" size="mini">{{ lockButtonShow(menuTab) }}</el-button></li>
                 <el-divider></el-divider>
                 <li @click="copyTab()"><el-button type="text" size="mini">{{$t('Copy')}}</el-button></li>
                 <li @click="setScreenfull()"><el-button type="text" size="mini">{{ $t('FullScreen') }}</el-button></li>
@@ -88,6 +88,18 @@ export default {
         })
     },
     methods: {
+        lockButtonShow(targetName) {
+            if (this.termList.length > 0 && targetName !== '') {
+                const tab = this.termList.filter(tab => tab.name === targetName)[0]
+                if (tab === undefined) {
+                    return this.$t('Lock')
+                } else {
+                    return tab.closable? this.$t('Lock'):this.$t('Unlock')
+                }
+            } else {
+                return this.$t('Lock')
+            }
+        },
         copyTab() {
             this.$refs[`${this.menuTab}`][0].setSSH()
             this.openTerm()
@@ -102,17 +114,17 @@ export default {
             }
             screenfull.toggle()
         },
-        closeTabs(par) {
-            if (par === 'all') {
-                this.termList = []
-                return
-            }
-            let currMenuIndex = 0
-            for (;currMenuIndex < this.termList.length; ++currMenuIndex) {
-                if (this.termList[currMenuIndex].name === this.menuTab) {
-                    break
+        getCurrMenuIndex() {
+            let index = 0
+            this.termList.forEach((tab, i) => { 
+                if (tab.name === this.menuTab) {
+                    index = i
+                    return
                 }
-            }
+            })
+            return index
+        },
+        closeTabs(par) {
             const setCurrentTerm = () => {
                 this.currentTermIndex = currMenuIndex
                 const tab = this.termList[currMenuIndex]
@@ -121,27 +133,42 @@ export default {
                 this.$store.commit('SET_TAB', this.termList[this.currentTermIndex])
                 this.$refs[`${tab.name}`][0].setSSH()
             }
+            const filterTerm = (firstIndex, lastIndex) => {
+                let tempList = []
+                this.termList.forEach((tab, index) => {
+                    if ((index >= firstIndex && index < lastIndex) || !tab.closable) {
+                        tempList.push(tab)
+                    }
+                })
+                this.termList = tempList
+            }
+            let currMenuIndex = this.getCurrMenuIndex()
             switch (par) {
             case 'left':
                 // 删除左侧tab标签
                 if (this.currentTermIndex < currMenuIndex) {
                     setCurrentTerm()
                 }
-                this.termList.splice(0, currMenuIndex)
+                filterTerm(currMenuIndex, this.termList.length)
                 break
             case 'right':
                 // 删除右侧tab标签
                 if (this.currentTermIndex > currMenuIndex) {
                     setCurrentTerm()
                 }
-                this.termList.splice(currMenuIndex + 1, this.termList.length)
+                filterTerm(0, currMenuIndex + 1)
                 break
             case 'other':
                 // 删除其他所有tab标签
                 if (this.currentTermIndex !== currMenuIndex) {
                     setCurrentTerm()
                 }
-                this.termList = this.termList.filter(tab => tab.name === this.menuTab)
+                filterTerm(currMenuIndex, currMenuIndex + 1)
+                break
+            case 'all':
+                filterTerm(-1, -1)
+                currMenuIndex = this.getCurrMenuIndex()
+                setCurrentTerm()
                 break
             }
             this.closeContextMenu()
@@ -179,12 +206,7 @@ export default {
             this.$store.commit('SET_TAB', this.termList[this.currentTermIndex])
         },
         findTerm() {
-            for (let i = 0; i < this.termList.length; ++i) {
-                if (this.termList[i].name === this.currentTerm) {
-                    this.currentTermIndex = i
-                    break
-                }
-            }
+            this.currentTermIndex = this.getCurrMenuIndex()
             this.$store.commit('SET_TAB', this.termList[this.currentTermIndex])
         },
         clickTab(tab) {
@@ -193,31 +215,31 @@ export default {
             this.findTerm()
         },
         removeTab(targetName) {
-            const tabs = this.termList
             let activeName = this.currentTerm
-            if (activeName === targetName) {
-                tabs.forEach((tab, index) => {
-                    if (targetName === tab.name) {
-                        const nextTab = tabs[index + 1] || tabs[index - 1]
-                        if (nextTab) {
-                            activeName = nextTab.name
-                        }
+            for (let i = 0; i < this.termList.length; ++i) {
+                if (targetName == this.termList[i].name) {
+                    if (!this.termList[i].closable) {
+                        this.$message({
+                            message: this.$t('unlockClose'),
+                            type: 'warning'
+                        })
+                        return
                     }
-                })
-                this.currentTerm = activeName
-                this.$refs[`${this.currentTerm}`][0].setSSH()
+                    const nextTab = this.termList[i + 1] || this.termList[i - 1]
+                    if (nextTab) {
+                        activeName = nextTab.name
+                    }
+                }
             }
-            this.termList = tabs.filter(tab => tab.name !== targetName)
+            this.currentTerm = activeName
+            this.$refs[`${this.currentTerm}`][0].setSSH()
+            this.termList = this.termList.filter(tab => tab.name !== targetName)
             this.findTerm()
         },
         async renameTab() {
             for (const tab of this.termList) {
                 if (tab.name === this.menuTab) {
                     let {value} = await MessageBox.prompt('', this.$t('Rename'), {
-                        showInput: true,
-                        inputType: 'text',
-                        confirmButtonText: this.$t('OK'),
-                        cancelButtonText: this.$t('Cancel'),
                         inputValue: tab.label,
                         inputErrorMessage: 'please input value',
                         inputValidator: function (label) {
@@ -232,8 +254,7 @@ export default {
                 }
             }
         },
-        // 简单时间锁会话
-        lockSession() {
+        lockTab() {
             for (let tab of this.termList) {
                 if (tab.name === this.menuTab) {
                     tab.closable = !tab.closable

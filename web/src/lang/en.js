@@ -5,5 +5,6 @@ export default {
     inputTip: 'please input ',
     keyTip: 'please paste privateKey content',
     wsClose: 'websocket connection disconnected!',
-    notCloseWindows: 'please do not close windows'
+    notCloseWindows: 'please do not close windows',
+    unlockClose: 'please unlock to close tab'
 }
