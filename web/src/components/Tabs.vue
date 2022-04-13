@@ -13,13 +13,12 @@
         </el-tabs>
         <div v-show="contextMenuVisible">
             <ul :style="{left:left+'px',top:top+'px'}" class="contextmenu">
-                <!--重命名-->
-                <li @click="renameTab()"><el-button type="text" size="mini">{{$t('Rename')}}</el-button></li>
-                <li @click="lockTab()"><el-button type="text" size="mini">{{ lockButtonShow(menuTab) }}</el-button></li>
-                <el-divider></el-divider>
                 <li @click="copyTab()"><el-button type="text" size="mini">{{$t('Copy')}}</el-button></li>
+                <li @click="lockTab()"><el-button type="text" size="mini">{{ lockButtonShow(menuTab) }}</el-button></li>
                 <li @click="setScreenfull()"><el-button type="text" size="mini">{{ $t('FullScreen') }}</el-button></li>
                 <li @click="removeTab(menuTab)"><el-button type="text" size="mini">{{$t('Close')}}</el-button></li>
+                <el-divider></el-divider>
+                <li @click="renameTab()"><el-button type="text" size="mini">{{$t('Rename')}}</el-button></li>
                 <el-divider></el-divider>
                 <li @click="closeTabs('left')"><el-button type="text" size="mini">{{$t('CloseLeft')}}</el-button></li>
                 <li @click="closeTabs('right')"><el-button type="text" size="mini">{{$t('CloseRight')}}</el-button></li>
