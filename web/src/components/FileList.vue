@@ -11,8 +11,14 @@
                         <el-button-group>
                             <el-button type="primary" size="mini" icon="el-icon-arrow-up" @click="upDirectory()"></el-button>
                             <el-button type="primary" size="mini" icon="el-icon-refresh" @click="getFileList()"></el-button>
-                            <el-button type="primary" size="mini" icon="el-icon-upload" @click="openUploadDialog()"></el-button>
                         </el-button-group>
+                        <el-dropdown @click="openUploadDialog()" @command="handleUploadCommand">
+                            <el-button type="primary" size="mini" icon="el-icon-upload"></el-button>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item command="file">上传文件</el-dropdown-item>
+                                <el-dropdown-item command="folder">上传文件夹</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
                         <el-dialog :title="$t('Upload')" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
                             <el-upload class="upload-demo" multiple drag :action="uploadUrl" :data="uploadData" :before-upload="beforeUpload" :on-progress="uploadProgress" :on-success="uploadSuccess">
                                 <i class="el-icon-upload"></i>
@@ -109,6 +115,23 @@ export default {
         openUploadDialog() {
             this.uploadTip = `${this.$t('uploadPath')}: ${this.currentPath}`
             this.uploadVisible = true
+        },
+        handleUploadCommand(cmd) {
+            this.openUploadDialog();
+            const isFolder = 'folder' === cmd,
+                supported = this.webkitdirectorySupported();
+            if (!supported) {
+                isFolder && this.$message.warning('当前浏览器不支持');
+                return;
+            }
+            // 添加文件夹
+            this.$nextTick(() => {
+                const input = document.getElementsByClassName('el-upload__input')[0];
+                if (input) input.webkitdirectory = isFolder;
+            })
+        },
+        webkitdirectorySupported(){
+            return 'webkitdirectory' in document.createElement('input')
         },
         beforeUpload(file) {
             this.uploadTip = `${this.$t('uploading')} ${file.name} ${this.$t('to')} ${this.currentPath}, ${this.notCloseWindows}..`
