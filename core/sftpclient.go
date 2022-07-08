@@ -3,6 +3,7 @@ package core
 import (
 	"io"
 	"mime/multipart"
+	"os"
 
 	"github.com/pkg/sftp"
 )
@@ -18,6 +19,14 @@ func (sclient *SSHClient) CreateSftp() error {
 		return err
 	}
 	sclient.Sftp = client
+	return nil
+}
+
+// Mkdirs 创建目录
+func (sclient *SSHClient) Mkdirs(path string) error {
+	if _, err := sclient.Sftp.Stat(path); os.IsNotExist(err) {
+		return sclient.Sftp.MkdirAll(path)
+	}
 	return nil
 }
 

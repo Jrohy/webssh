@@ -29,14 +29,14 @@
                     </el-button-group>
                 </el-col>
             </el-row>
-            <el-table :data="fileList" :height="clientHeight" @row-dblclick="rowClick">
+            <el-table :data="fileList" :height="clientHeight" @row-click="rowClick">
                 <el-table-column
                     :label="$t('Name')"
                     :width="nameWidth"
                     sortable :sort-method="nameSort">
                     <template slot-scope="scope">
-                        <p v-if="scope.row.IsDir === true" style="color:#0c60b5" class="el-icon-folder"> {{ scope.row.Name }}</p>
-                        <p v-else-if="scope.row.IsDir === false" class="el-icon-document"> {{ scope.row.Name }}</p>
+                        <p v-if="scope.row.IsDir === true" style="color:#0c60b5;cursor:pointer;" class="el-icon-folder"> {{ scope.row.Name }}</p>
+                        <p v-else-if="scope.row.IsDir === false" style="cursor: pointer" class="el-icon-document"> {{ scope.row.Name }}</p>
                     </template>
                 </el-table-column>
                 <el-table-column :label="$t('Size')" prop="Size"></el-table-column>
@@ -136,6 +136,9 @@ export default {
         beforeUpload(file) {
             this.uploadTip = `${this.$t('uploading')} ${file.name} ${this.$t('to')} ${this.currentPath}, ${this.notCloseWindows}..`
             this.uploadData.id = file.uid
+            // 是否有文件夹
+            const dirPath = file.webkitRelativePath;
+            this.uploadData.dir = dirPath ? dirPath.substring(0, dirPath.lastIndexOf('/')) : '';
             return true
         },
         uploadSuccess(r, file) {
