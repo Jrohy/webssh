@@ -121,11 +121,16 @@ func UploadFile(c *gin.Context) *ResponseBody {
 	}
 	defer file.Close()
 	filename := header.Filename
-	if path[len(path)-1:] == "/" {
-		path = path + filename
-	} else {
-		path = path + "/" + filename
+	var pathArr []string
+	pathArr = append(pathArr, strings.TrimRight(path, "/"))
+	if dir := c.DefaultPostForm("dir", ""); "" != dir {
+		pathArr = append(pathArr, dir)
+		if err := sshClient.Mkdirs(strings.Join(pathArr, "/")); err != nil {
+			fmt.Println(err)
+		}
 	}
+	pathArr = append(pathArr, filename)
+	path = strings.Join(pathArr, "/")
 	err = sshClient.Upload(file, id, path)
 	if err != nil {
 		fmt.Println(err)
