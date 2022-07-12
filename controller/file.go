@@ -100,7 +100,6 @@ func UploadFile(c *gin.Context) *ResponseBody {
 	)
 	responseBody := ResponseBody{Msg: "success"}
 	defer TimeCost(time.Now(), &responseBody)
-	path := strings.TrimSpace(c.DefaultPostForm("path", "/root"))
 	sshInfo := c.PostForm("sshInfo")
 	id := c.PostForm("id")
 	if sshClient, err = core.DecodedMsgToSSHClient(sshInfo); err != nil {
@@ -120,18 +119,17 @@ func UploadFile(c *gin.Context) *ResponseBody {
 		return &responseBody
 	}
 	defer file.Close()
-	filename := header.Filename
-	var pathArr []string
-	pathArr = append(pathArr, strings.TrimRight(path, "/"))
+	path := strings.TrimSpace(c.DefaultPostForm("path", "/root"))
+	pathArr := []string{strings.TrimRight(path, "/")}
 	if dir := c.DefaultPostForm("dir", ""); "" != dir {
 		pathArr = append(pathArr, dir)
 		if err := sshClient.Mkdirs(strings.Join(pathArr, "/")); err != nil {
-			fmt.Println(err)
+			responseBody.Msg = err.Error()
+			return &responseBody
 		}
 	}
-	pathArr = append(pathArr, filename)
-	path = strings.Join(pathArr, "/")
-	err = sshClient.Upload(file, id, path)
+	pathArr = append(pathArr, header.Filename)
+	err = sshClient.Upload(file, id, strings.Join(pathArr, "/"))
 	if err != nil {
 		fmt.Println(err)
 		responseBody.Msg = err.Error()

@@ -7,11 +7,9 @@
                     <el-input v-model="currentPath" @keyup.enter.native="getFileList()"></el-input>
                 </el-col>
                 <el-col :span="6">
-                    <el-button-group>
-                        <el-button-group>
-                            <el-button type="primary" size="mini" icon="el-icon-arrow-up" @click="upDirectory()"></el-button>
-                            <el-button type="primary" size="mini" icon="el-icon-refresh" @click="getFileList()"></el-button>
-                        </el-button-group>
+                    <el-button-group style="display:flex; justify-content:center; align-items:center;">
+                        <el-button type="primary" size="mini" icon="el-icon-arrow-up" @click="upDirectory()"></el-button>
+                        <el-button type="primary" size="mini" icon="el-icon-refresh" @click="getFileList()"></el-button>
                         <el-dropdown @click="openUploadDialog()" @command="handleUploadCommand">
                             <el-button type="primary" size="mini" icon="el-icon-upload"></el-button>
                             <el-dropdown-menu slot="dropdown">
@@ -19,14 +17,14 @@
                                 <el-dropdown-item command="folder">上传文件夹</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
-                        <el-dialog :title="$t('Upload')" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
-                            <el-upload class="upload-demo" multiple drag :action="uploadUrl" :data="uploadData" :before-upload="beforeUpload" :on-progress="uploadProgress" :on-success="uploadSuccess">
-                                <i class="el-icon-upload"></i>
-                                <div class="el-upload__text">{{$t('UploadTips')}}</div>
-                                <div class="el-upload__tip" slot="tip">{{ this.uploadTip }}</div>
-                            </el-upload>
-                        </el-dialog>
                     </el-button-group>
+                    <el-dialog :title="$t('Upload')" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
+                        <el-upload class="upload-demo" multiple drag :action="uploadUrl" :data="uploadData" :before-upload="beforeUpload" :on-progress="uploadProgress" :on-success="uploadSuccess">
+                            <i class="el-icon-upload"></i>
+                            <div class="el-upload__text">{{$t('UploadTips')}}</div>
+                            <div class="el-upload__tip" slot="tip">{{ this.uploadTip }}</div>
+                        </el-upload>
+                    </el-dialog>
                 </el-col>
             </el-row>
             <el-table :data="fileList" :height="clientHeight" @row-click="rowClick">
