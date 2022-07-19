@@ -9,14 +9,14 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^0.24.0",
-    "element-ui": "^2.15.7",
+    "axios": "^0.27.2",
+    "element-ui": "^2.15.9",
     "screenfull": "^5.2.0",
     "sortablejs": "^1.15.0",
-    "vue": "^2.6.14",
-    "vue-i18n": "^8.27.1",
+    "vue": "^2.7.7",
+    "vue-i18n": "^8.27.2",
     "vuex": "^3.6.2",
-    "xterm": "4.13.0",
+    "xterm": "4.19.0",
     "xterm-addon-attach": "^0.6.0",
     "xterm-addon-fit": "^0.5.0"
   },
