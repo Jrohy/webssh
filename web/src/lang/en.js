@@ -6,5 +6,8 @@ export default {
     keyTip: 'please paste privateKey content',
     wsClose: 'websocket connection disconnected!',
     notCloseWindows: 'please do not close windows',
-    unlockClose: 'please unlock to close tab'
+    unlockClose: 'please unlock to close tab',
+    clickSelectFile: 'click to select upload file',
+    clickSelectFolder: 'click to select upload folder',
+    uploadFinish: ' upload finish'
 }

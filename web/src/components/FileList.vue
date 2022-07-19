@@ -13,15 +13,15 @@
                         <el-dropdown @click="openUploadDialog()" @command="handleUploadCommand">
                             <el-button type="primary" size="mini" icon="el-icon-upload"></el-button>
                             <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item command="file">上传文件</el-dropdown-item>
-                                <el-dropdown-item command="folder">上传文件夹</el-dropdown-item>
+                                <el-dropdown-item command="file">{{ $t('uploadFile') }}</el-dropdown-item>
+                                <el-dropdown-item command="folder">{{ $t('uploadFolder') }}</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                     </el-button-group>
-                    <el-dialog :title="$t('Upload')" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
-                        <el-upload class="upload-demo" multiple drag :action="uploadUrl" :data="uploadData" :before-upload="beforeUpload" :on-progress="uploadProgress" :on-success="uploadSuccess">
+                    <el-dialog :title="$t(this.titleTip)" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
+                        <el-upload ref="upload" multiple drag :action="uploadUrl" :data="uploadData" :before-upload="beforeUpload" :on-progress="uploadProgress" :on-success="uploadSuccess">
                             <i class="el-icon-upload"></i>
-                            <div class="el-upload__text">{{$t('UploadTips')}}</div>
+                            <div class="el-upload__text">{{ $t(this.selectTip) }}</div>
                             <div class="el-upload__tip" slot="tip">{{ this.uploadTip }}</div>
                         </el-upload>
                     </el-dialog>
@@ -58,6 +58,8 @@ export default {
             downloadFilePath: '',
             currentPath: '',
             clientHeight: 0,
+            selectTip: 'clickSelectFile',
+            titleTip: 'uploadFile',
             uploadTip: '',
             dialogWidth: '50%',
             uploadWidth: '32%',
@@ -115,6 +117,13 @@ export default {
             this.uploadVisible = true
         },
         handleUploadCommand(cmd) {
+            if (cmd === 'folder') {
+                this.selectTip = 'clickSelectFolder'
+                this.titleTip = 'uploadFolder'
+            } else {
+                this.selectTip = 'clickSelectFile'
+                this.titleTip = 'uploadFile'
+            }
             this.openUploadDialog();
             const isFolder = 'folder' === cmd,
                 supported = this.webkitdirectorySupported();

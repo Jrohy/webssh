@@ -7,6 +7,7 @@ export default {
     Size: '大小',
     Name: '名字',
     Copy: '复制',
+    Upload: '上传',
     Rename: '重命名',
     FullScreen: '全屏',
     Close: '关闭',
@@ -32,5 +33,9 @@ export default {
     to: '到',
     uploading: '正在上传',
     notCloseWindows: '请勿关闭窗口',
-    unlockClose: '请解锁后再来关闭'
+    unlockClose: '请解锁后再来关闭',
+    clickSelectFile: '点击选择文件',
+    clickSelectFolder: '点击选择文件夹',
+    uploadFile: '上传文件',
+    uploadFolder: '上传文件夹'
 }
