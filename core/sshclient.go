@@ -121,6 +121,7 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration, clo
 				err := sclient.Session.WindowChange(rows, cols)
 				if err != nil {
 					log.Println(err)
+					close(stopCh)
 					return
 				}
 				continue
@@ -135,13 +136,8 @@ func (sclient *SSHClient) Connect(ws *websocket.Conn, timeout time.Duration, clo
 
 	defer func() {
 		ws.Close()
-		if sclient.Session != nil {
-			sclient.StdinPipe.Close()
-			sclient.Session.Close()
-			sclient.Client.Close()
-			sclient.Session = nil
-			sclient.Client = nil
-		}
+		sclient.Close()
+
 		if err := recover(); err != nil {
 			log.Println(err)
 		}
