@@ -237,10 +237,13 @@ export default {
     .el-dialog__wrapper {
         overflow: hidden;
     }
+    .el-dropdown{
+        top: -1px;
+    }
     .el-input__inner {
         border: 0 none;
         border-bottom: 1px solid #ccc;
-        border-radius: 0px;
+        border-radius: 0;
         width: 80%;
     }
     .el-table--border tr,td{
