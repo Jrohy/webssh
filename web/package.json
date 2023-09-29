@@ -4,13 +4,13 @@
   "private": true,
   "author": "Jrohy",
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "serve": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service serve",
+    "build": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service build",
+    "lint": "SET NODE_OPTIONS=--openssl-legacy-provider && vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^1.2.1",
-    "element-ui": "^2.15.12",
+    "axios": "^1.5.1",
+    "element-ui": "^2.15.14",
     "screenfull": "^5.2.0",
     "sortablejs": "^1.15.0",
     "vue": "^2.7.14",
@@ -27,8 +27,8 @@
     "babel-eslint": "^10.1.0",
     "babel-plugin-component": "^1.1.1",
     "eslint": "^6.8.0",
-    "eslint-plugin-vue": "^7.18.0",
-    "sass": "^1.56.2",
+    "eslint-plugin-vue": "^7.20.0",
+    "sass": "^1.68.0",
     "sass-loader": "^10.4.1",
     "vue-template-compiler": "^2.7.14"
   },
