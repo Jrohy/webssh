@@ -9,7 +9,7 @@
                 <el-col :span="6">
                     <el-button-group>
                         <el-button type="primary" size="mini" icon="el-icon-arrow-up" @click="upDirectory()"></el-button>
-                        <el-button type="primary" size="mini" icon="el-icon-refresh" @click="getFileList()" style="margin-left: 0px;"></el-button>
+                        <el-button type="primary" size="mini" icon="el-icon-refresh" @click="getFileList()"></el-button>
                         <el-dropdown @click="openUploadDialog()" @command="handleUploadCommand">
                             <el-button type="primary" size="mini" icon="el-icon-upload"></el-button>
                             <el-dropdown-menu slot="dropdown">
