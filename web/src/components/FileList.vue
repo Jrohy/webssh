@@ -3,13 +3,13 @@
         <el-button type="primary" size="small" @click="getFileList(); dialogVisible = true">{{$t('FileBrowser')}}</el-button>
         <el-dialog :title="$t('FileBrowser') + '(' + this.$store.state.sshInfo.host + ')'" :visible.sync="dialogVisible" top="5vh" :width="dialogWidth">
             <el-row>
-                <el-col :span="18">
+                <el-col :span="this.pathSpan">
                     <el-input v-model="currentPath" @keyup.enter.native="getFileList()"></el-input>
                 </el-col>
                 <el-col :span="6">
-                    <el-button-group style="display:flex; justify-content:center; align-items:center;">
+                    <el-button-group>
                         <el-button type="primary" size="mini" icon="el-icon-arrow-up" @click="upDirectory()"></el-button>
-                        <el-button type="primary" size="mini" icon="el-icon-refresh" @click="getFileList()"></el-button>
+                        <el-button type="primary" size="mini" icon="el-icon-refresh" @click="getFileList()" style="margin-left: 0px;"></el-button>
                         <el-dropdown @click="openUploadDialog()" @command="handleUploadCommand">
                             <el-button type="primary" size="mini" icon="el-icon-upload"></el-button>
                             <el-dropdown-menu slot="dropdown">
@@ -57,6 +57,7 @@ export default {
             fileList: [],
             downloadFilePath: '',
             currentPath: '',
+            pathSpan: 18,
             clientHeight: 0,
             selectTip: 'clickSelectFile',
             titleTip: 'uploadFile',
@@ -68,13 +69,12 @@ export default {
         }
     },
     created() {
-        this.clientHeight = document.body.clientHeight - 200
+        this.calculDialog()
     },
     mounted() {
-        this.setDialogWidth()
+        this.calculDialog()
         window.onresize = () => {
-            this.setDialogWidth()
-            this.clientHeight = document.body.clientHeight - 200
+            this.calculDialog()
         }
     },
     computed: {
@@ -96,19 +96,23 @@ export default {
         }
     },
     methods: {
-        setDialogWidth() {
-            const clientWith = document.body.clientWidth
-            if (clientWith < 600) {
+        calculDialog() {
+            const clientWidth = document.body.clientWidth
+            this.clientHeight = document.body.clientHeight - 200
+            this.pathSpan = 18
+            if (clientWidth < 600) {
                 this.dialogWidth = '98%'
                 this.uploadWidth = '100%'
                 this.nameWidth = 120
-            } else if (clientWith >= 600 && clientWith < 1000) {
+                this.pathSpan = 16
+                this.clientHeight = document.body.clientHeight - 205
+            } else if (clientWidth >= 600 && clientWidth < 1000) {
                 this.dialogWidth = '80%'
-                this.uploadWidth = '58%'
+                this.uploadWidth = '59%'
                 this.nameWidth = 220
             } else {
                 this.dialogWidth = '50%'
-                this.uploadWidth = '32%'
+                this.uploadWidth = '26%'
                 this.nameWidth = 260
             }
         },
@@ -251,6 +255,9 @@ export default {
     }
    .el-table td, .el-table th {
         padding: 2px 0;
+    }
+    .el-dropdown {
+        display: flex;
     }
 }
 </style>
