@@ -50,7 +50,7 @@ import { mapState } from 'vuex'
 
 export default {
     name: 'FileList',
-    data () {
+    data() {
         return {
             uploadVisible: false,
             dialogVisible: false,
@@ -69,12 +69,12 @@ export default {
         }
     },
     created() {
-        this.calculDialog()
+        this.resizeDialog()
     },
     mounted() {
-        this.calculDialog()
+        this.resizeDialog()
         window.onresize = () => {
-            this.calculDialog()
+            this.resizeDialog()
         }
     },
     computed: {
@@ -96,7 +96,7 @@ export default {
         }
     },
     methods: {
-        calculDialog() {
+        resizeDialog() {
             const clientWidth = document.body.clientWidth
             this.clientHeight = document.body.clientHeight - 200
             this.pathSpan = 18

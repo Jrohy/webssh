@@ -13,7 +13,7 @@ import { AttachAddon } from 'xterm-addon-attach'
 export default {
     name: 'Terminal',
     props: ['id'],
-    data () {
+    data() {
         return {
             term: null,
             ws: null,
@@ -30,12 +30,22 @@ export default {
         setSSH() {
             this.$store.commit('SET_SSH', this.ssh)
         },
+        resizeTerm(termWeb) {
+            const clientWidth = document.body.clientWidth
+            if (clientWidth < 600) {
+                termWeb.style.height = (document.body.clientHeight - 301) + 'px'
+            } else if (clientWidth >= 600 && clientWidth < 1000) {
+                termWeb.style.height = (document.body.clientHeight - 151) + 'px'
+            } else {
+                termWeb.style.height = (document.body.clientHeight - 101) + 'px'
+            }
+        },
         createTerm() {
             if (this.$store.state.sshInfo.password === '') {
                 return
             }
             const termWeb = document.getElementById(this.id)
-            termWeb.style.height = (document.body.clientHeight - 102) + 'px'
+            this.resizeTerm(termWeb)
             const sshReq = this.$store.getters.sshReq
             this.close()
             const prefix = process.env.NODE_ENV === 'production' ? '' : '/ws'
@@ -129,7 +139,7 @@ export default {
                 }
             })
             window.addEventListener('resize', () => {
-                termWeb.style.height = (document.body.clientHeight - 102) + 'px'
+                self.resizeTerm(termWeb)
                 try { fitAddon.fit() } catch (e) {/**/}
                 if (self.ws !== null && self.ws.readyState === 1) {
                     self.ws.send(`resize:${self.term.rows}:${self.term.cols}`)
@@ -185,7 +195,7 @@ export default {
             }
         }
     },
-    beforeDestroy () {
+    beforeDestroy() {
         this.close()
     }
 }
