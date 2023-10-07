@@ -18,7 +18,7 @@
                             </el-dropdown-menu>
                         </el-dropdown>
                     </el-button-group>
-                    <el-dialog :title="$t(this.titleTip)" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
+                    <el-dialog custom-class="uploadContainer" :title="$t(this.titleTip)" :visible.sync="uploadVisible" append-to-body :width="uploadWidth">
                         <el-upload ref="upload" multiple drag :action="uploadUrl" :data="uploadData" :before-upload="beforeUpload" :on-progress="uploadProgress" :on-success="uploadSuccess">
                             <i class="el-icon-upload"></i>
                             <div class="el-upload__text">{{ $t(this.selectTip) }}</div>
@@ -112,7 +112,7 @@ export default {
                 this.nameWidth = 220
             } else {
                 this.dialogWidth = '50%'
-                this.uploadWidth = '26%'
+                this.uploadWidth = '30%'
                 this.nameWidth = 260
             }
         },
@@ -258,6 +258,14 @@ export default {
     }
     .el-dropdown {
         display: flex;
+    }
+}
+.uploadContainer {
+    .el-upload {
+        display: flex;
+    }
+    .el-upload-dragger {
+        width: 95%;
     }
 }
 </style>
