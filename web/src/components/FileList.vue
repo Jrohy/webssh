@@ -112,7 +112,7 @@ export default {
                 this.nameWidth = 220
             } else {
                 this.dialogWidth = '50%'
-                this.uploadWidth = '30%'
+                this.uploadWidth = '28%'
                 this.nameWidth = 260
             }
         },
