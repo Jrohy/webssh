@@ -145,7 +145,7 @@ export default {
             return 'webkitdirectory' in document.createElement('input')
         },
         beforeUpload(file) {
-            this.uploadTip = `${this.$t('uploading')} ${file.name} ${this.$t('to')} ${this.currentPath}, ${this.notCloseWindows}..`
+            this.uploadTip = `${this.$t('uploading')} ${file.name} ${this.$t('to')} ${this.currentPath}, ${this.$t('notCloseWindows')}..`
             this.uploadData.id = file.uid
             // 是否有文件夹
             const dirPath = file.webkitRelativePath;
