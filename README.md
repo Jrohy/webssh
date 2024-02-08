@@ -35,5 +35,11 @@ Usage of ./webssh_linux_amd64:
 
 docker运行:
 ```
-docker run -d --net=host --log-driver json-file --log-opt max-file=1 --log-opt max-size=100m --restart always --name webssh -e TZ=Asia/Shanghai -e savePass=true jrohy/webssh
+docker run -d --net=host --log-driver json-file --log-opt max-file=1 --log-opt max-size=100m --restart always --name webssh -e TZ=Asia/Shanghai jrohy/webssh
+```
+支持添加的环境变量:
+```
+port: web使用端口, 默认5032
+savePass: 是否保存密码, 默认true
+authInfo: 开启账号密码登录验证, 'user:pass'的格式设置
 ```
