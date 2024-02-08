@@ -31,15 +31,15 @@ Usage of ./webssh_linux_amd64:
 ```
 
 ## 运行
-下载release里不同平台的包来执行即可
+1. 下载[releases](https://github.com/Jrohy/webssh/releases)里不同平台的包来执行即可  
 
-docker运行:
-```
-docker run -d --net=host --log-driver json-file --log-opt max-file=1 --log-opt max-size=100m --restart always --name webssh -e TZ=Asia/Shanghai jrohy/webssh
-```
-支持添加的环境变量:
-```
-port: web使用端口, 默认5032
-savePass: 是否保存密码, 默认true
-authInfo: 开启账号密码登录验证, 'user:pass'的格式设置
-```
+2. docker运行:  
+    ```
+    docker run -d --net=host --log-driver json-file --log-opt max-file=1 --log-opt max-size=100m --restart always --name webssh -e TZ=Asia/Shanghai jrohy/webssh
+    ```
+    支持添加的环境变量:
+    ```
+    port: web使用端口, 默认5032
+    savePass: 是否保存密码, 默认true
+    authInfo: 开启账号密码登录验证, 'user:pass'的格式设置
+    ```
