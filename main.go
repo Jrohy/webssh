@@ -35,14 +35,18 @@ var (
 
 func init() {
 	flag.IntVar(&timeout, "t", 120, "ssh连接超时时间(min)")
-	flag.BoolVar(&savePass, "s", false, "保存ssh密码")
-	envVal, ok := os.LookupEnv("savePass")
-	if ok {
-		b, err := strconv.ParseBool(envVal)
-		if err != nil {
-			savePass = false
-		} else {
+	flag.BoolVar(&savePass, "s", true, "保存ssh密码")
+	if envVal, ok := os.LookupEnv("savePass"); ok {
+		if b, err := strconv.ParseBool(envVal); err == nil {
 			savePass = b
+		}
+	}
+	if envVal, ok := os.LookupEnv("authInfo"); ok {
+		*authInfo = envVal
+	}
+	if envVal, ok := os.LookupEnv("port"); ok {
+		if b, err := strconv.Atoi(envVal); err == nil {
+			*port = b
 		}
 	}
 	flag.Parse()
@@ -56,7 +60,7 @@ func init() {
 	if *authInfo != "" {
 		accountInfo := strings.Split(*authInfo, ":")
 		if len(accountInfo) != 2 || accountInfo[0] == "" || accountInfo[1] == "" {
-			fmt.Println("请按'-a user:pass'的格式来传参, 且账号密码都不能为空!")
+			fmt.Println("请按'user:pass'的格式来传参或设置环境变量, 且账号密码都不能为空!")
 			os.Exit(0)
 		}
 		username, password = accountInfo[0], accountInfo[1]
