@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <el-tabs v-model="currentTerm" type="card" @tab-remove="removeTab" @tab-click="clickTab">
+    <div :class="{ 'clean_mode': cleanMode }">
+        <el-tabs  v-model="currentTerm" type="card" @tab-remove="removeTab" @tab-click="clickTab">
             <el-tab-pane
                 v-for="(item, index) in termList"
                 :key="item.name"
@@ -47,7 +47,8 @@ export default {
             menuTab: '',
             contextMenuVisible: false,
             left: '',
-            top: ''
+            top: '',
+            cleanMode: false
         }
     },
     computed: {
@@ -70,6 +71,13 @@ export default {
         }
     },
     mounted() {
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const cleanMode = urlParams.get('clean');
+        if (cleanMode) {
+            this.cleanMode = true
+        }
+
         // 使用原生js 为单个dom绑定鼠标右击事件
         const tabTop = document.body.getElementsByClassName('el-tabs__nav-scroll')
         for (let i = 0; i < tabTop.length; ++i) {

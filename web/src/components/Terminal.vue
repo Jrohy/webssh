@@ -20,11 +20,19 @@ export default {
             resetClose: false,
             ssh: null,
             savePass: false,
-            fontSize: 15
+            fontSize: 15,
+            cleanMode: false
         }
     },
     mounted() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const cleanMode = urlParams.get('clean');
+        if (cleanMode) {
+            this.cleanMode = true
+        }
+
         this.createTerm()
+       
     },
     methods: {
         setSSH() {
@@ -37,7 +45,11 @@ export default {
             } else if (clientWidth >= 600 && clientWidth < 1000) {
                 termWeb.style.height = (document.body.clientHeight - 151) + 'px'
             } else {
-                termWeb.style.height = (document.body.clientHeight - 101) + 'px'
+                if(this.cleanMode) {
+                    termWeb.style.height = (document.body.clientHeight - 43) + 'px'
+                }else{
+                    termWeb.style.height = (document.body.clientHeight - 82) + 'px'
+                }
             }
         },
         createTerm() {

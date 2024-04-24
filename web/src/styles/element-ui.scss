@@ -48,7 +48,12 @@
     background: #F0F5FB;
   }
 }
-
+.clean_mode .el-tabs__nav-scroll{
+  display: none;
+}
+.el-header {
+  padding: 0 5px !important;
+}
 // $tab_padding: 12px;
 
 // 设置tabs无边框

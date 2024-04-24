@@ -1,8 +1,8 @@
 <template>
     <el-row>
         <el-col>
-            <el-form :inline="true" style="padding-top: 10px;" :model="sshInfo" :rules="checkRules">
-                <el-form-item size="small" prop="host">
+            <el-form :inline="true" :model="sshInfo" :rules="checkRules" style="padding-top: 5px;height:42px">
+                <el-form-item size="small" prop="host" v-if="cleanMode == false">
                     <template slot="label">
                         <el-tooltip effect="dark" placement="left">
                             <div slot="content">
@@ -13,13 +13,13 @@
                     </template>
                     <el-input v-model="sshInfo.host" :placeholder="$t('hostTip')" @keyup.enter.native="$emit('ssh-select')"></el-input>
                 </el-form-item>
-                <el-form-item label="Port" size="small" prop="port">
+                <el-form-item label="Port" size="small" prop="port" v-if="cleanMode == false">
                     <el-input v-model="sshInfo.port" :placeholder="$t('portTip')" @keyup.enter.native="$emit('ssh-select')" style="width: 100px"></el-input>
                 </el-form-item>
-                <el-form-item label="Username" size="small" prop="username">
+                <el-form-item label="Username" size="small" prop="username" v-if="cleanMode == false">
                     <el-input v-model="sshInfo.username" :placeholder="$t('nameTip')" @keyup.enter.native="$emit('ssh-select')" style="width: 110px"></el-input>
                 </el-form-item>
-                <el-form-item size="small" prop="password">
+                <el-form-item size="small" prop="password" v-if="cleanMode == false">
                     <template slot="label">
                         <el-tooltip effect="dark" placement="left">
                             <div slot="content">
@@ -40,13 +40,13 @@
                         <el-button type="primary" @click="textareaVisible = false; $emit('ssh-select')">{{ $t('Connect') }}</el-button>
                     </div>
                 </el-dialog>
-                <el-form-item  size="small">
+                <el-form-item size="small" v-if="cleanMode == false">
                     <el-button type="primary" @click="$emit('ssh-select')" plain>{{ $t('Connect') }}</el-button>
                 </el-form-item>
-                <el-form-item  size="small">
+                <el-form-item size="small">
                     <file-list></file-list>
                 </el-form-item>
-                <el-form-item size="small">
+                <el-form-item size="small" v-if="cleanMode == false">
                     <el-dropdown @command="handleCommand">
                         <el-button type="primary">
                             {{ $t('History') }}
@@ -78,6 +78,7 @@ export default {
     data() {
         return {
             textareaVisible: false,
+            cleanMode:false,
             checkRules: {
                 host: [
                     { required: true, trigger: 'blur' }
@@ -128,9 +129,29 @@ export default {
                 }
                 reader.readAsText(file)
             }
+        },
+        checkAndSelectSSH() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sshInfo = urlParams.get('sshInfo');
+            console.log(sshInfo)
+            if (sshInfo) {
+                const sshInfoObj = JSON.parse(window.atob(sshInfo))
+                console.log(sshInfoObj)
+                this.$store.commit('SET_SSH', sshInfoObj)
+                if (sshInfoObj.password === undefined) {
+                    this.$store.commit('SET_PASS', '')
+                }
+                this.$emit('ssh-select')
+            }
         }
     },
     mounted() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const cleanMode = urlParams.get('clean');
+        if (cleanMode) {
+            this.cleanMode = true
+        }
+        this.checkAndSelectSSH();
         if (this.sshList.length > 0) {
             const latestSSH = this.sshList[this.sshList.length - 1]
             this.$store.commit('SET_SSH', latestSSH)
