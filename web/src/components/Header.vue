@@ -136,6 +136,8 @@ export default {
             console.log(sshInfo)
             if (sshInfo) {
                 const sshInfoObj = JSON.parse(window.atob(sshInfo))
+                sshInfoObj.host = sshInfoObj.ipaddress
+                this.$store.state.sshInfo = sshInfoObj
                 console.log(sshInfoObj)
                 this.$store.commit('SET_SSH', sshInfoObj)
                 if (sshInfoObj.password === undefined) {
