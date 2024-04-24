@@ -23,7 +23,6 @@ func TimeCost(start time.Time, body *ResponseBody) {
 // CheckSSH 检查ssh连接是否能连接
 func CheckSSH(c *gin.Context) *ResponseBody {
 	// 输出一下入参
-	fmt.Println("CheckSSH in: ", c.Request.URL.Query())
 	responseBody := ResponseBody{Msg: "success"}
 	defer TimeCost(time.Now(), &responseBody)
 	sshInfo := c.DefaultQuery("sshInfo", "")
